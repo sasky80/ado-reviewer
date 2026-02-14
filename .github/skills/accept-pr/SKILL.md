@@ -1,0 +1,32 @@
+---
+name: accept-pr
+description: >
+  Approve (accept) an Azure DevOps pull request by casting an "Approve" vote
+  on behalf of the authenticated user. Use after a successful code review
+  when all findings are resolved and the PR is ready to merge.
+---
+
+# Accept PR
+
+Run the [accept-pr.sh](./accept-pr.sh) script to approve a pull request.
+
+## Arguments
+
+| # | Name | Required | Description |
+|---|------|----------|-------------|
+| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 2 | project | Yes | Project name or ID |
+| 3 | repositoryId | Yes | Repository name or ID |
+| 4 | pullRequestId | Yes | Pull request ID |
+
+## Examples
+
+```bash
+# Approve PR 42
+bash .github/skills/accept-pr/accept-pr.sh default_organization MyProject MyRepo 42
+```
+
+## Output
+
+Returns JSON with the reviewer vote object including `id`, `vote`, and `displayName`.
+A `vote` value of `10` means **Approved**.
