@@ -22,7 +22,12 @@ PAT_VAR="ADO_PAT_${ORG_ENV_SUFFIX}"
 
 ## Available Skills
 
-You have the following bash-based skills for interacting with Azure DevOps. Run them in the terminal:
+You have the following script-based skills for interacting with Azure DevOps. Run them in the terminal:
+
+Execution rule by OS:
+
+- On **Windows**, execute the PowerShell script variant (`.ps1`) in the same skill folder with the same argument order.
+- On **macOS/Linux**, execute the bash script variant (`.sh`).
 
 | Skill | Script | Purpose |
 |-------|--------|---------|

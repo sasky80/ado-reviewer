@@ -8,7 +8,12 @@ description: >
 
 # Get File Content
 
-Run the [get-file-content.sh](./get-file-content.sh) script to retrieve file content.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [get-file-content.sh](./get-file-content.sh) script on macOS/Linux or [get-file-content.ps1](./get-file-content.ps1) on Windows to retrieve file content.
 
 ## Arguments
 
@@ -29,6 +34,14 @@ bash .github/skills/get-file-content/get-file-content.sh default_organization My
 
 # Get file from a specific commit
 bash .github/skills/get-file-content/get-file-content.sh default_organization MyProject MyRepo /src/app.js abc123 commit
+```
+
+```powershell
+# Get file from a specific branch (Windows)
+.\github\skills\get-file-content\get-file-content.ps1 default_organization MyProject MyRepo /src/app.js main branch
+
+# Get file from a specific commit (Windows)
+.\github\skills\get-file-content\get-file-content.ps1 default_organization MyProject MyRepo /src/app.js abc123 commit
 ```
 
 ## Output

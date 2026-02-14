@@ -8,7 +8,12 @@ description: >
 
 # Update PR Thread
 
-Run the [update-pr-thread.sh](./update-pr-thread.sh) script to reply to and/or resolve a PR comment thread.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [update-pr-thread.sh](./update-pr-thread.sh) script on macOS/Linux or [update-pr-thread.ps1](./update-pr-thread.ps1) on Windows to reply to and/or resolve a PR comment thread.
 
 ## Arguments
 
@@ -35,6 +40,17 @@ bash .github/skills/update-pr-thread/update-pr-thread.sh default_organization My
 
 # Update status only (no reply)
 bash .github/skills/update-pr-thread/update-pr-thread.sh default_organization MyProject MyRepo 42 7 - fixed
+```
+
+```powershell
+# Reply and mark as fixed (Windows)
+.\github\skills\update-pr-thread\update-pr-thread.ps1 default_organization MyProject MyRepo 42 7 "Fixed: refactored to use parameterized queries." fixed
+
+# Reply only (keep thread active) (Windows)
+.\github\skills\update-pr-thread\update-pr-thread.ps1 default_organization MyProject MyRepo 42 7 "Working on this, will push a fix shortly."
+
+# Update status only (no reply) (Windows)
+.\github\skills\update-pr-thread\update-pr-thread.ps1 default_organization MyProject MyRepo 42 7 - fixed
 ```
 
 ## Output

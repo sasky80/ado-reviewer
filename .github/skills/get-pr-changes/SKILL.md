@@ -8,7 +8,12 @@ description: >
 
 # Get PR Changes
 
-Run the [get-pr-changes.sh](./get-pr-changes.sh) script to list changed files.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [get-pr-changes.sh](./get-pr-changes.sh) script on macOS/Linux or [get-pr-changes.ps1](./get-pr-changes.ps1) on Windows to list changed files.
 
 ## Arguments
 
@@ -24,6 +29,10 @@ Run the [get-pr-changes.sh](./get-pr-changes.sh) script to list changed files.
 
 ```bash
 bash .github/skills/get-pr-changes/get-pr-changes.sh default_organization MyProject MyRepo 42 3
+```
+
+```powershell
+.\github\skills\get-pr-changes\get-pr-changes.ps1 default_organization MyProject MyRepo 42 3
 ```
 
 ## Output

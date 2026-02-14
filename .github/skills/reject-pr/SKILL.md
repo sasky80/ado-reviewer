@@ -9,7 +9,12 @@ description: >
 
 # Reject PR
 
-Run the [reject-pr.sh](./reject-pr.sh) script to reject a pull request.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [reject-pr.sh](./reject-pr.sh) script on macOS/Linux or [reject-pr.ps1](./reject-pr.ps1) on Windows to reject a pull request.
 
 ## Arguments
 
@@ -24,6 +29,10 @@ Run the [reject-pr.sh](./reject-pr.sh) script to reject a pull request.
 
 ```bash
 bash .github/skills/reject-pr/reject-pr.sh default_organization MyProject MyRepo 42
+```
+
+```powershell
+.\github\skills\reject-pr\reject-pr.ps1 default_organization MyProject MyRepo 42
 ```
 
 ## Output

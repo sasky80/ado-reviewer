@@ -8,7 +8,12 @@ description: >
 
 # Wait For Author
 
-Run the [wait-for-author.sh](./wait-for-author.sh) script to set the reviewer vote to waiting for author.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [wait-for-author.sh](./wait-for-author.sh) script on macOS/Linux or [wait-for-author.ps1](./wait-for-author.ps1) on Windows to set the reviewer vote to waiting for author.
 
 ## Arguments
 
@@ -23,6 +28,10 @@ Run the [wait-for-author.sh](./wait-for-author.sh) script to set the reviewer vo
 
 ```bash
 bash .github/skills/wait-for-author/wait-for-author.sh default_organization MyProject MyRepo 42
+```
+
+```powershell
+.\github\skills\wait-for-author\wait-for-author.ps1 default_organization MyProject MyRepo 42
 ```
 
 ## Output

@@ -8,7 +8,12 @@ description: >
 
 # Get PR Iterations
 
-Run the [get-pr-iterations.sh](./get-pr-iterations.sh) script to list iterations.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [get-pr-iterations.sh](./get-pr-iterations.sh) script on macOS/Linux or [get-pr-iterations.ps1](./get-pr-iterations.ps1) on Windows to list iterations.
 
 ## Arguments
 
@@ -23,6 +28,10 @@ Run the [get-pr-iterations.sh](./get-pr-iterations.sh) script to list iterations
 
 ```bash
 bash .github/skills/get-pr-iterations/get-pr-iterations.sh default_organization MyProject MyRepo 42
+```
+
+```powershell
+.\github\skills\get-pr-iterations\get-pr-iterations.ps1 default_organization MyProject MyRepo 42
 ```
 
 ## Output

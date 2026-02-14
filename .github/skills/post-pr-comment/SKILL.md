@@ -8,7 +8,12 @@ description: >
 
 # Post PR Comment
 
-Run the [post-pr-comment.sh](./post-pr-comment.sh) script to create a comment thread on a pull request.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [post-pr-comment.sh](./post-pr-comment.sh) script on macOS/Linux or [post-pr-comment.ps1](./post-pr-comment.ps1) on Windows to create a comment thread on a pull request.
 
 ## Arguments
 
@@ -30,6 +35,14 @@ bash .github/skills/post-pr-comment/post-pr-comment.sh default_organization MyPr
 
 # General PR-level comment
 bash .github/skills/post-pr-comment/post-pr-comment.sh default_organization MyProject MyRepo 42 - 0 "Overall the code looks good."
+```
+
+```powershell
+# Inline comment on a specific file and line (Windows)
+.\github\skills\post-pr-comment\post-pr-comment.ps1 default_organization MyProject MyRepo 42 /src/app.js 15 "Consider using const here."
+
+# General PR-level comment (Windows)
+.\github\skills\post-pr-comment\post-pr-comment.ps1 default_organization MyProject MyRepo 42 - 0 "Overall the code looks good."
 ```
 
 ## Formatting Note

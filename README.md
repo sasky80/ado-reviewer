@@ -1,13 +1,13 @@
 # Azure DevOps Copilot Skills
 
-Bash-based Copilot agent skills for Azure DevOps — includes a code-reviewer prompt and
+Script-based Copilot agent skills for Azure DevOps — includes a code-reviewer prompt and
 skills for pull request analysis, repository browsing, and project discovery.
 
 The setup uses:
 
 - Prompt file: [.github/copilot/code-reviewer.prompt.md](.github/copilot/code-reviewer.prompt.md)
 - Skills: [.github/skills/](.github/skills/)
-- Validation script: [scripts/validate-skills.sh](scripts/validate-skills.sh)
+- Validation scripts: [scripts/validate-skills.sh](scripts/validate-skills.sh), [scripts/validate-skills.ps1](scripts/validate-skills.ps1)
 
 ## Contents
 
@@ -34,9 +34,10 @@ REPO="<your_repo>"
 PR="<your_pr_id>"
 ITERATION="<your_iteration_id>"
 
-# Set PAT env var as ADO_PAT_<org_with_dashes_replaced_by_underscores>
-# Example: my-org -> ADO_PAT_my_org
-export ADO_PAT_<your_org_with_dashes_replaced_by_underscores>="<your_pat>"
+# Set PAT env var as ADO_PAT_<normalized_org>
+# Normalization: replace non-[A-Za-z0-9_] with _, then prefix _ if it starts with a digit
+# Examples: my-org -> ADO_PAT_my_org, 123-org -> ADO_PAT__123_org
+export ADO_PAT_<your_normalized_org>="<your_pat>"
 bash .github/skills/get-pr-details/get-pr-details.sh "$ORG" "$PROJECT" "$REPO" "$PR"
 ```
 
@@ -45,15 +46,21 @@ follow [Setup Instructions](#setup-instructions).
 
 ## Requirements
 
-- Bash shell (macOS/Linux natively; on Windows use **Git Bash** or **WSL** — CMD and
-  PowerShell are only supported for setting environment variables, not for running the
-  skill scripts)
-- `curl`
-- `python3`
-- `base64` utility (standard on macOS/Linux and Git Bash)
 - Azure DevOps Personal Access Token (PAT) with **Code** scope (read/write as needed)
 
-Quick check:
+macOS/Linux (`.sh` skills):
+
+- Bash shell
+- `curl`
+- `python3`
+- `base64` utility
+
+Windows (`.ps1` skills):
+
+- PowerShell 5.1+
+- Built-in `Invoke-RestMethod` (included with Windows PowerShell)
+
+Quick check (macOS/Linux):
 
 ```bash
 bash --version
@@ -61,18 +68,33 @@ curl --version
 python3 --version
 ```
 
+Quick check (Windows PowerShell):
+
+```powershell
+$PSVersionTable.PSVersion
+Get-Command Invoke-RestMethod
+```
+
 ## Setup Instructions
 
 1. Clone this repository (or copy the skill files into your existing repo).
-2. Set the Azure DevOps PAT environment variable (`ADO_PAT_<org_with_dashes_replaced_by_underscores>`) — see
+2. Set the Azure DevOps PAT environment variable (`ADO_PAT_<normalized_org>`) — see
   [Environment Variables](#environment-variables-os-specific) below.
 3. If you use placeholder examples in prompts/commands, replace
   `default_organization`, `project`, and
   `repository` with your real values.
-4. *(Optional)* Validate skill connectivity/authentication:
+4. *(Optional)* Validate skill connectivity/authentication (use the script matching your OS):
+
    ```bash
    ./scripts/validate-skills.sh "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
    ```
+
+  On Windows/PowerShell, use:
+
+  ```powershell
+  .\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
+  ```
+
    Advanced options and reusable wrappers are in [Validation (Optional)](#validation-optional).
 5. Start reviewing — open the Copilot chat and use the reviewer prompt command:
     ```text
@@ -113,11 +135,18 @@ Explicit org/project/repo form:
 ## Environment Variables (OS-specific)
 
 Each skill reads the Azure DevOps PAT from an environment variable named
-`ADO_PAT_<org_with_dashes_replaced_by_underscores>`.
+`ADO_PAT_<normalized_org>`.
 
-Rule: take your Azure DevOps organization from the URL and replace `-` with `_`.
+Normalization rule (must match scripts):
 
-Example: organization `my-org` => env var `ADO_PAT_my_org`.
+1. Replace every character not in `[A-Za-z0-9_]` with `_`.
+2. If the normalized value starts with a digit, prefix it with `_`.
+
+Examples:
+
+- organization `my-org` => `ADO_PAT_my_org`
+- organization `my org` => `ADO_PAT_my_org`
+- organization `123-org` => `ADO_PAT__123_org`
 
 ### macOS / Linux (zsh/bash)
 
@@ -141,9 +170,14 @@ echo 'export ADO_PAT_my_org="<your_pat>"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### Windows (for setting PAT only — run scripts in Git Bash or WSL)
+### Windows
 
-PowerShell — current session:
+Use the shell where you run the scripts:
+
+- If you run skills in **Git Bash**, you can set `ADO_PAT_*` in PowerShell/CMD (or directly in Git Bash).
+- If you run skills in **WSL bash**, set `ADO_PAT_*` inside WSL (`~/.bashrc` / `~/.zshrc`), because WSL sessions do not reliably inherit PowerShell session variables.
+
+PowerShell — current session (works for PowerShell-launched tools and typically Git Bash):
 
 ```powershell
 $env:ADO_PAT_my_org = "<your_pat>"
@@ -167,13 +201,26 @@ CMD — persist for current user:
 setx ADO_PAT_my_org "<your_pat>"
 ```
 
+WSL bash — current session:
+
+```bash
+export ADO_PAT_my_org="<your_pat>"
+```
+
+WSL bash — persist for future sessions:
+
+```bash
+echo 'export ADO_PAT_my_org="<your_pat>"' >> ~/.bashrc
+source ~/.bashrc
+```
+
 ## Copying Files to Another Repository
 
 If you want to reuse these skills in another repository, copy the following paths:
 
 - `.github/copilot/code-reviewer.prompt.md`
-- `.github/skills/` (entire folder, including all `SKILL.md` and `.sh` files)
-- `scripts/validate-skills.sh`
+- `.github/skills/` (entire folder, including all `SKILL.md`, `.sh`, and `.ps1` files)
+- `scripts/validate-skills.sh` and `scripts/validate-skills.ps1`
 
 Example from this repo root:
 
@@ -184,6 +231,7 @@ mkdir -p "$TARGET_REPO/.github/copilot" "$TARGET_REPO/.github/skills" "$TARGET_R
 cp .github/copilot/code-reviewer.prompt.md "$TARGET_REPO/.github/copilot/"
 cp -R .github/skills/* "$TARGET_REPO/.github/skills/"
 cp scripts/validate-skills.sh "$TARGET_REPO/scripts/"
+cp scripts/validate-skills.ps1 "$TARGET_REPO/scripts/"
 ```
 
 Then, in the target repo:
@@ -195,9 +243,19 @@ chmod +x .github/skills/*/*.sh scripts/validate-skills.sh
 ./scripts/validate-skills.sh "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
 ```
 
+On Windows/PowerShell:
+
+```powershell
+Set-Location C:\path\to\your-repo
+.\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
+```
+
 ## Skills Description
 
-All skills are bash scripts that call Azure DevOps REST API (`api-version=7.2-preview`).
+All skills call Azure DevOps REST API (`api-version=7.2-preview`).
+
+- macOS/Linux: use `.sh` scripts
+- Windows: use `.ps1` scripts (same folder, same argument order)
 
 | Skill | Script | Description |
 |---|---|---|
@@ -257,13 +315,28 @@ Run all skill checks to confirm authentication and connectivity:
 ./scripts/validate-skills.sh "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
 ```
 
+Windows/PowerShell equivalent:
+
+```powershell
+.\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
+```
+
 Reusable wrappers:
 
 - Generic template for local customization:
+
   ```bash
   cp scripts/validate-skill-template.sh scripts/validate-skill-local.sh
   # edit scripts/validate-skill-local.sh with your values, then:
   ./scripts/validate-skill-local.sh
+  ```
+
+- Windows template for local customization:
+
+  ```powershell
+  Copy-Item scripts\validate-skill-template.ps1 scripts\validate-skill-local.ps1
+  # edit scripts\validate-skill-local.ps1 with your values, then:
+  .\scripts\validate-skill-local.ps1
   ```
 
 Optional repository-specific validation inputs:
@@ -316,12 +389,14 @@ Use these sources for the variables used in examples (`ORG`, `PROJECT`, `REPO`, 
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `401 Unauthorized` | PAT is missing, expired, or wrong org name in env var | Verify `ADO_PAT_<org_with_dashes_replaced_by_underscores>` is set and the PAT is valid (example: `my-org` => `ADO_PAT_my_org`) |
+| `401 Unauthorized` | PAT is missing, expired, or wrong org name in env var | Verify `ADO_PAT_<normalized_org>` is set using the normalization rule above and that the PAT is valid (example: `123-org` => `ADO_PAT__123_org`) |
 | `command not found: python3` | Python 3 not installed or not on PATH | Install Python 3 and ensure `python3` is available |
 | `base64: invalid option` | GNU vs BSD flag mismatch | Scripts already handle this — ensure you're using the repo version |
 | `Permission denied` on `.sh` files | Scripts not marked executable | Run `chmod +x .github/skills/*/*.sh scripts/*.sh` |
 | Validation fails but skills work | PR or iteration ID is stale/invalid | Re-check `PR` and `ITERATION` values (see [Where to Find Values](#where-to-find-values)) |
-| Scripts fail on Windows CMD/PowerShell | Bash required | Use **Git Bash** or **WSL** to run scripts |
+| Scripts fail on Windows CMD/PowerShell | Wrong script type for current shell (`.sh` vs `.ps1`) | On Windows use `.ps1` skills in PowerShell; on macOS/Linux use `.sh` skills |
+| PAT is set in PowerShell but script says env var is missing | Script is running in a different shell context (commonly WSL bash) | Set `ADO_PAT_<normalized_org>` in the same shell used to run scripts (for WSL: set/export inside WSL) |
+| `$'\\r': command not found` in `.sh` scripts | CRLF line endings in local clone | Pull latest, then run `git add --renormalize .` and commit; the repo includes `.gitattributes` with `*.sh text eol=lf` |
 
 ## Contributing
 

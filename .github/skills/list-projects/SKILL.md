@@ -7,7 +7,12 @@ description: >
 
 # List Projects
 
-Run the [list-projects.sh](./list-projects.sh) script to list projects.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [list-projects.sh](./list-projects.sh) script on macOS/Linux or [list-projects.ps1](./list-projects.ps1) on Windows to list projects.
 
 ## Arguments
 
@@ -19,6 +24,10 @@ Run the [list-projects.sh](./list-projects.sh) script to list projects.
 
 ```bash
 bash .github/skills/list-projects/list-projects.sh default_organization
+```
+
+```powershell
+.\github\skills\list-projects\list-projects.ps1 default_organization
 ```
 
 ## Output

@@ -8,7 +8,12 @@ description: >
 
 # Get PR Threads
 
-Run the [get-pr-threads.sh](./get-pr-threads.sh) script to retrieve comment threads.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [get-pr-threads.sh](./get-pr-threads.sh) script on macOS/Linux or [get-pr-threads.ps1](./get-pr-threads.ps1) on Windows to retrieve comment threads.
 
 ## Arguments
 
@@ -23,6 +28,10 @@ Run the [get-pr-threads.sh](./get-pr-threads.sh) script to retrieve comment thre
 
 ```bash
 bash .github/skills/get-pr-threads/get-pr-threads.sh default_organization MyProject MyRepo 42
+```
+
+```powershell
+.\github\skills\get-pr-threads\get-pr-threads.ps1 default_organization MyProject MyRepo 42
 ```
 
 ## Output

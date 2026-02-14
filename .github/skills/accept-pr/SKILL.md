@@ -8,7 +8,12 @@ description: >
 
 # Accept PR
 
-Run the [accept-pr.sh](./accept-pr.sh) script to approve a pull request.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [accept-pr.sh](./accept-pr.sh) script on macOS/Linux or [accept-pr.ps1](./accept-pr.ps1) on Windows to approve a pull request.
 
 ## Arguments
 
@@ -24,6 +29,11 @@ Run the [accept-pr.sh](./accept-pr.sh) script to approve a pull request.
 ```bash
 # Approve PR 42
 bash .github/skills/accept-pr/accept-pr.sh default_organization MyProject MyRepo 42
+```
+
+```powershell
+# Approve PR 42 (Windows)
+.\github\skills\accept-pr\accept-pr.ps1 default_organization MyProject MyRepo 42
 ```
 
 ## Output

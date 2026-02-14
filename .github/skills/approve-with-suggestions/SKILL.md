@@ -8,7 +8,12 @@ description: >
 
 # Approve PR With Suggestions
 
-Run the [approve-with-suggestions.sh](./approve-with-suggestions.sh) script to approve a pull request with suggestions.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [approve-with-suggestions.sh](./approve-with-suggestions.sh) script on macOS/Linux or [approve-with-suggestions.ps1](./approve-with-suggestions.ps1) on Windows to approve a pull request with suggestions.
 
 ## Arguments
 
@@ -23,6 +28,10 @@ Run the [approve-with-suggestions.sh](./approve-with-suggestions.sh) script to a
 
 ```bash
 bash .github/skills/approve-with-suggestions/approve-with-suggestions.sh default_organization MyProject MyRepo 42
+```
+
+```powershell
+.\github\skills\approve-with-suggestions\approve-with-suggestions.ps1 default_organization MyProject MyRepo 42
 ```
 
 ## Output

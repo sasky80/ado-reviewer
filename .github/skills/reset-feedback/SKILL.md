@@ -8,7 +8,12 @@ description: >
 
 # Reset Feedback
 
-Run the [reset-feedback.sh](./reset-feedback.sh) script to clear reviewer vote feedback.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [reset-feedback.sh](./reset-feedback.sh) script on macOS/Linux or [reset-feedback.ps1](./reset-feedback.ps1) on Windows to clear reviewer vote feedback.
 
 ## Arguments
 
@@ -23,6 +28,10 @@ Run the [reset-feedback.sh](./reset-feedback.sh) script to clear reviewer vote f
 
 ```bash
 bash .github/skills/reset-feedback/reset-feedback.sh default_organization MyProject MyRepo 42
+```
+
+```powershell
+.\github\skills\reset-feedback\reset-feedback.ps1 default_organization MyProject MyRepo 42
 ```
 
 ## Output

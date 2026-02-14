@@ -7,7 +7,12 @@ description: >
 
 # List Repositories
 
-Run the [list-repositories.sh](./list-repositories.sh) script to list repositories.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [list-repositories.sh](./list-repositories.sh) script on macOS/Linux or [list-repositories.ps1](./list-repositories.ps1) on Windows to list repositories.
 
 ## Arguments
 
@@ -20,6 +25,10 @@ Run the [list-repositories.sh](./list-repositories.sh) script to list repositori
 
 ```bash
 bash .github/skills/list-repositories/list-repositories.sh default_organization MyProject
+```
+
+```powershell
+.\github\skills\list-repositories\list-repositories.ps1 default_organization MyProject
 ```
 
 ## Output

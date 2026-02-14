@@ -8,7 +8,12 @@ description: >
 
 # Get PR Details
 
-Run the [get-pr-details.sh](./get-pr-details.sh) script to retrieve pull request metadata.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [get-pr-details.sh](./get-pr-details.sh) script on macOS/Linux or [get-pr-details.ps1](./get-pr-details.ps1) on Windows to retrieve pull request metadata.
 
 ## Arguments
 
@@ -23,6 +28,10 @@ Run the [get-pr-details.sh](./get-pr-details.sh) script to retrieve pull request
 
 ```bash
 bash .github/skills/get-pr-details/get-pr-details.sh default_organization MyProject MyRepo 42
+```
+
+```powershell
+.\github\skills\get-pr-details\get-pr-details.ps1 default_organization MyProject MyRepo 42
 ```
 
 ## Output

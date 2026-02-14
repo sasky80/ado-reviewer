@@ -8,7 +8,12 @@ description: >
 
 # Get Commit Diffs
 
-Run the [get-commit-diffs.sh](./get-commit-diffs.sh) script to get a diff summary.
+## Platform Note
+
+- macOS/Linux: run `.sh` scripts
+- Windows: run `.ps1` scripts with the same argument order
+
+Run the [get-commit-diffs.sh](./get-commit-diffs.sh) script on macOS/Linux or [get-commit-diffs.ps1](./get-commit-diffs.ps1) on Windows to get a diff summary.
 
 ## Arguments
 
@@ -27,6 +32,11 @@ Run the [get-commit-diffs.sh](./get-commit-diffs.sh) script to get a diff summar
 ```bash
 # Compare two branches
 bash .github/skills/get-commit-diffs/get-commit-diffs.sh default_organization MyProject MyRepo main feature/login branch branch
+```
+
+```powershell
+# Compare two branches (Windows)
+.\github\skills\get-commit-diffs\get-commit-diffs.ps1 default_organization MyProject MyRepo main feature/login branch branch
 ```
 
 ## Output
