@@ -89,21 +89,25 @@ Get-Command Invoke-RestMethod
    ./scripts/validate-skills.sh "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
    ```
 
-  On Windows/PowerShell, use:
+   On Windows/PowerShell, use:
 
-  ```powershell
-  .\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
-  ```
+     ```powershell
+     .\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
+     ```
 
    Advanced options and reusable wrappers are in [Validation (Optional)](#validation-optional).
+
 5. Start reviewing — open the Copilot chat and use the reviewer prompt command:
+
     ```text
     /code-reviewer review pr 1
     ```
+
     Using the command form helps force the agent to use the predefined prompt and skills.
     If the agent cannot determine the organization, project, or repository from context
     (e.g., from the git remote of the cloned repo or prompt defaults), it will ask.
     You can also be explicit:
+
     ```text
     /code-reviewer review pr 1 in myorg/myproject/myrepo
     ```
