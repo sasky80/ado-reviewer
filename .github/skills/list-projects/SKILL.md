@@ -18,16 +18,16 @@ Run the [list-projects.sh](./list-projects.sh) script on macOS/Linux or [list-pr
 
 | # | Name | Required | Description |
 |---|------|----------|-------------|
-| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 1 | organization | Yes | Azure DevOps organization |
 
 ## Example
 
 ```bash
-bash .github/skills/list-projects/list-projects.sh default_organization
+bash .github/skills/list-projects/list-projects.sh myorg
 ```
 
 ```powershell
-.\github\skills\list-projects\list-projects.ps1 default_organization
+.\github\skills\list-projects\list-projects.ps1 myorg
 ```
 
 ## Output

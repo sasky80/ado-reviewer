@@ -83,6 +83,40 @@ run_check "get-pr-changes" \
 run_check "get-pr-threads" \
   bash .github/skills/get-pr-threads/get-pr-threads.sh "$ORG" "$PROJECT" "$REPO" "$PR"
 
+if [[ -n "${GH_SEC_PAT:-}" ]]; then
+  run_check "get-github-advisories" \
+    bash .github/skills/get-github-advisories/get-github-advisories.sh npm lodash 4.17.20 high 10
+
+  run_check "get-pr-dependency-advisories" \
+    bash .github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.sh "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION"
+else
+  echo "--- get-github-advisories ---"
+  echo "SKIP (GH_SEC_PAT is not set)"
+  echo "--- get-pr-dependency-advisories ---"
+  echo "SKIP (GH_SEC_PAT is not set)"
+fi
+
+if command -v npm >/dev/null 2>&1; then
+  run_check "check-deprecated-dependencies (npm)" \
+    bash .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh npm lodash 4.17.21
+else
+  echo "--- check-deprecated-dependencies (npm) ---"
+  echo "SKIP (npm is not available)"
+fi
+
+if command -v python3 >/dev/null 2>&1; then
+  run_check "check-deprecated-dependencies (pip)" \
+    bash .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh pip requests 2.31.0
+
+  run_check "check-deprecated-dependencies (nuget)" \
+    bash .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh nuget Newtonsoft.Json 13.0.3
+else
+  echo "--- check-deprecated-dependencies (pip) ---"
+  echo "SKIP (python3 is not available)"
+  echo "--- check-deprecated-dependencies (nuget) ---"
+  echo "SKIP (python3 is not available)"
+fi
+
 if [[ -n "$TESTED_FILE_PATH" && -n "$BRANCH_BASE" && -n "$BRANCH_TARGET" ]]; then
   run_check "get-file-content" \
     bash .github/skills/get-file-content/get-file-content.sh "$ORG" "$PROJECT" "$REPO" "$TESTED_FILE_PATH" "$BRANCH_TARGET" branch

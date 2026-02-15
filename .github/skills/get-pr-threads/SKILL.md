@@ -19,7 +19,7 @@ Run the [get-pr-threads.sh](./get-pr-threads.sh) script on macOS/Linux or [get-p
 
 | # | Name | Required | Description |
 |---|------|----------|-------------|
-| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
@@ -27,11 +27,11 @@ Run the [get-pr-threads.sh](./get-pr-threads.sh) script on macOS/Linux or [get-p
 ## Example
 
 ```bash
-bash .github/skills/get-pr-threads/get-pr-threads.sh default_organization MyProject MyRepo 42
+bash .github/skills/get-pr-threads/get-pr-threads.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
-.\github\skills\get-pr-threads\get-pr-threads.ps1 default_organization MyProject MyRepo 42
+.\github\skills\get-pr-threads\get-pr-threads.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output

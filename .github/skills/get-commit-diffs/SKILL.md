@@ -19,7 +19,7 @@ Run the [get-commit-diffs.sh](./get-commit-diffs.sh) script on macOS/Linux or [g
 
 | # | Name | Required | Description |
 |---|------|----------|-------------|
-| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | baseVersion | Yes | Base version (commit SHA, branch, or tag) |
@@ -31,12 +31,12 @@ Run the [get-commit-diffs.sh](./get-commit-diffs.sh) script on macOS/Linux or [g
 
 ```bash
 # Compare two branches
-bash .github/skills/get-commit-diffs/get-commit-diffs.sh default_organization MyProject MyRepo main feature/login branch branch
+bash .github/skills/get-commit-diffs/get-commit-diffs.sh myorg MyProject MyRepo main feature/login branch branch
 ```
 
 ```powershell
 # Compare two branches (Windows)
-.\github\skills\get-commit-diffs\get-commit-diffs.ps1 default_organization MyProject MyRepo main feature/login branch branch
+.\github\skills\get-commit-diffs\get-commit-diffs.ps1 myorg MyProject MyRepo main feature/login branch branch
 ```
 
 ## Output

@@ -1,4 +1,3 @@
-````skill
 ---
 name: reject-pr
 description: >
@@ -20,7 +19,7 @@ Run the [reject-pr.sh](./reject-pr.sh) script on macOS/Linux or [reject-pr.ps1](
 
 | # | Name | Required | Description |
 |---|------|----------|-------------|
-| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
@@ -28,16 +27,14 @@ Run the [reject-pr.sh](./reject-pr.sh) script on macOS/Linux or [reject-pr.ps1](
 ## Example
 
 ```bash
-bash .github/skills/reject-pr/reject-pr.sh default_organization MyProject MyRepo 42
+bash .github/skills/reject-pr/reject-pr.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
-.\github\skills\reject-pr\reject-pr.ps1 default_organization MyProject MyRepo 42
+.\github\skills\reject-pr\reject-pr.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output
 
 Returns JSON with the reviewer vote object.
 A `vote` value of `-10` means **Rejected**.
-
-````

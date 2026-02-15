@@ -84,6 +84,39 @@ Test-SkillCheck -Name 'get-pr-iterations' -ScriptPath (Join-Path $skillsRoot 'ge
 Test-SkillCheck -Name 'get-pr-changes' -ScriptPath (Join-Path $skillsRoot 'get-pr-changes\get-pr-changes.ps1') -Args @($Org, $Project, $Repo, $Pr, $Iteration)
 Test-SkillCheck -Name 'get-pr-threads' -ScriptPath (Join-Path $skillsRoot 'get-pr-threads\get-pr-threads.ps1') -Args @($Org, $Project, $Repo, $Pr)
 
+$ghToken = [Environment]::GetEnvironmentVariable('GH_SEC_PAT', 'Process')
+if ([string]::IsNullOrWhiteSpace($ghToken)) { $ghToken = [Environment]::GetEnvironmentVariable('GH_SEC_PAT', 'User') }
+if ([string]::IsNullOrWhiteSpace($ghToken)) { $ghToken = [Environment]::GetEnvironmentVariable('GH_SEC_PAT', 'Machine') }
+if (-not [string]::IsNullOrWhiteSpace($ghToken)) {
+    Test-SkillCheck -Name 'get-github-advisories' -ScriptPath (Join-Path $skillsRoot 'get-github-advisories\get-github-advisories.ps1') -Args @('npm', 'lodash', '4.17.20', 'high', '10')
+    Test-SkillCheck -Name 'get-pr-dependency-advisories' -ScriptPath (Join-Path $skillsRoot 'get-pr-dependency-advisories\get-pr-dependency-advisories.ps1') -Args @($Org, $Project, $Repo, $Pr, $Iteration)
+}
+else {
+    Write-Output '--- get-github-advisories ---'
+    Write-Output 'SKIP (GH_SEC_PAT is not set)'
+    Write-Output '--- get-pr-dependency-advisories ---'
+    Write-Output 'SKIP (GH_SEC_PAT is not set)'
+}
+
+if (Get-Command npm -ErrorAction SilentlyContinue) {
+    Test-SkillCheck -Name 'check-deprecated-dependencies (npm)' -ScriptPath (Join-Path $skillsRoot 'check-deprecated-dependencies\check-deprecated-dependencies.ps1') -Args @('npm', 'lodash', '4.17.21')
+}
+else {
+    Write-Output '--- check-deprecated-dependencies (npm) ---'
+    Write-Output 'SKIP (npm is not available)'
+}
+
+if (Get-Command Invoke-RestMethod -ErrorAction SilentlyContinue) {
+    Test-SkillCheck -Name 'check-deprecated-dependencies (pip)' -ScriptPath (Join-Path $skillsRoot 'check-deprecated-dependencies\check-deprecated-dependencies.ps1') -Args @('pip', 'requests', '2.31.0')
+    Test-SkillCheck -Name 'check-deprecated-dependencies (nuget)' -ScriptPath (Join-Path $skillsRoot 'check-deprecated-dependencies\check-deprecated-dependencies.ps1') -Args @('nuget', 'Newtonsoft.Json', '13.0.3')
+}
+else {
+    Write-Output '--- check-deprecated-dependencies (pip) ---'
+    Write-Output 'SKIP (Invoke-RestMethod is not available)'
+    Write-Output '--- check-deprecated-dependencies (nuget) ---'
+    Write-Output 'SKIP (Invoke-RestMethod is not available)'
+}
+
 if (-not [string]::IsNullOrWhiteSpace($TestedFilePath) -and -not [string]::IsNullOrWhiteSpace($BranchBase) -and -not [string]::IsNullOrWhiteSpace($BranchTarget)) {
     Test-SkillCheck -Name 'get-file-content' -ScriptPath (Join-Path $skillsRoot 'get-file-content\get-file-content.ps1') -Args @($Org, $Project, $Repo, $TestedFilePath, $BranchTarget, 'branch')
     Test-SkillCheck -Name 'get-commit-diffs' -ScriptPath (Join-Path $skillsRoot 'get-commit-diffs\get-commit-diffs.ps1') -Args @($Org, $Project, $Repo, $BranchBase, $BranchTarget, 'branch', 'branch')

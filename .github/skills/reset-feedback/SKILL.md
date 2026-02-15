@@ -1,4 +1,3 @@
-````skill
 ---
 name: reset-feedback
 description: >
@@ -19,7 +18,7 @@ Run the [reset-feedback.sh](./reset-feedback.sh) script on macOS/Linux or [reset
 
 | # | Name | Required | Description |
 |---|------|----------|-------------|
-| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
@@ -27,16 +26,14 @@ Run the [reset-feedback.sh](./reset-feedback.sh) script on macOS/Linux or [reset
 ## Example
 
 ```bash
-bash .github/skills/reset-feedback/reset-feedback.sh default_organization MyProject MyRepo 42
+bash .github/skills/reset-feedback/reset-feedback.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
-.\github\skills\reset-feedback\reset-feedback.ps1 default_organization MyProject MyRepo 42
+.\github\skills\reset-feedback\reset-feedback.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output
 
 Returns JSON with the reviewer vote object.
 A `vote` value of `0` means **No vote** (feedback reset).
-
-````

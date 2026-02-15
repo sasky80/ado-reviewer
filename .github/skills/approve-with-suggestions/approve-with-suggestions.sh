@@ -14,38 +14,24 @@ PROJECT="$2"
 REPO_ID="$3"
 PR_ID="$4"
 
-urlencode() {
-  python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "$1"
-}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../common/ado-utils.sh"
 
-PAT_SUFFIX="${ORG//[^A-Za-z0-9_]/_}"
-if [[ "$PAT_SUFFIX" =~ ^[0-9] ]]; then
-  PAT_SUFFIX="_${PAT_SUFFIX}"
-fi
-PAT_VAR="ADO_PAT_${PAT_SUFFIX}"
-PAT="$(printenv "$PAT_VAR" || true)"
-if [[ -z "$PAT" ]]; then
-  echo "Environment variable $PAT_VAR is not set" >&2
-  exit 1
-fi
-
-ORG_ENC="$(urlencode "$ORG")"
+ado_init "$ORG"
 PROJECT_ENC="$(urlencode "$PROJECT")"
 REPO_ID_ENC="$(urlencode "$REPO_ID")"
 
-ENCODED=$(printf ":%s" "$PAT" | base64 | tr -d '\n')
-
-REVIEWER_ID=$(curl -s --fail-with-body \
-  -H "Authorization: Basic ${ENCODED}" \
+REVIEWER_ID=$(curl -s --fail-with-body --max-time 30 \
+  -H "Authorization: Basic ${ADO_AUTH}" \
   -H "Accept: application/json" \
   "https://dev.azure.com/${ORG_ENC}/_apis/connectionData" \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['authenticatedUser']['id'])")
 
 VOTE_BODY='{"vote":5}'
 
-curl -s --fail-with-body \
+curl -s --fail-with-body --max-time 30 \
   -X PUT \
-  -H "Authorization: Basic ${ENCODED}" \
+  -H "Authorization: Basic ${ADO_AUTH}" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d "$VOTE_BODY" \

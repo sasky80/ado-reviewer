@@ -19,7 +19,7 @@ Run the [get-pr-iterations.sh](./get-pr-iterations.sh) script on macOS/Linux or 
 
 | # | Name | Required | Description |
 |---|------|----------|-------------|
-| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
@@ -27,11 +27,11 @@ Run the [get-pr-iterations.sh](./get-pr-iterations.sh) script on macOS/Linux or 
 ## Example
 
 ```bash
-bash .github/skills/get-pr-iterations/get-pr-iterations.sh default_organization MyProject MyRepo 42
+bash .github/skills/get-pr-iterations/get-pr-iterations.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
-.\github\skills\get-pr-iterations\get-pr-iterations.ps1 default_organization MyProject MyRepo 42
+.\github\skills\get-pr-iterations\get-pr-iterations.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output

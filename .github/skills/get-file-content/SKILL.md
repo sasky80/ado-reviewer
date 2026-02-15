@@ -19,7 +19,7 @@ Run the [get-file-content.sh](./get-file-content.sh) script on macOS/Linux or [g
 
 | # | Name | Required | Description |
 |---|------|----------|-------------|
-| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | path | Yes | File path in the repo (e.g. `/src/app.js`) |
@@ -30,18 +30,18 @@ Run the [get-file-content.sh](./get-file-content.sh) script on macOS/Linux or [g
 
 ```bash
 # Get file from a specific branch
-bash .github/skills/get-file-content/get-file-content.sh default_organization MyProject MyRepo /src/app.js main branch
+bash .github/skills/get-file-content/get-file-content.sh myorg MyProject MyRepo /src/app.js main branch
 
 # Get file from a specific commit
-bash .github/skills/get-file-content/get-file-content.sh default_organization MyProject MyRepo /src/app.js abc123 commit
+bash .github/skills/get-file-content/get-file-content.sh myorg MyProject MyRepo /src/app.js abc123 commit
 ```
 
 ```powershell
 # Get file from a specific branch (Windows)
-.\github\skills\get-file-content\get-file-content.ps1 default_organization MyProject MyRepo /src/app.js main branch
+.\github\skills\get-file-content\get-file-content.ps1 myorg MyProject MyRepo /src/app.js main branch
 
 # Get file from a specific commit (Windows)
-.\github\skills\get-file-content\get-file-content.ps1 default_organization MyProject MyRepo /src/app.js abc123 commit
+.\github\skills\get-file-content\get-file-content.ps1 myorg MyProject MyRepo /src/app.js abc123 commit
 ```
 
 ## Output

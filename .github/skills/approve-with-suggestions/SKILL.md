@@ -1,4 +1,3 @@
-````skill
 ---
 name: approve-with-suggestions
 description: >
@@ -19,7 +18,7 @@ Run the [approve-with-suggestions.sh](./approve-with-suggestions.sh) script on m
 
 | # | Name | Required | Description |
 |---|------|----------|-------------|
-| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
@@ -27,16 +26,14 @@ Run the [approve-with-suggestions.sh](./approve-with-suggestions.sh) script on m
 ## Example
 
 ```bash
-bash .github/skills/approve-with-suggestions/approve-with-suggestions.sh default_organization MyProject MyRepo 42
+bash .github/skills/approve-with-suggestions/approve-with-suggestions.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
-.\github\skills\approve-with-suggestions\approve-with-suggestions.ps1 default_organization MyProject MyRepo 42
+.\github\skills\approve-with-suggestions\approve-with-suggestions.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output
 
 Returns JSON with the reviewer vote object.
 A `vote` value of `5` means **Approved with suggestions**.
-
-````

@@ -18,17 +18,17 @@ Run the [list-repositories.sh](./list-repositories.sh) script on macOS/Linux or 
 
 | # | Name | Required | Description |
 |---|------|----------|-------------|
-| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 
 ## Example
 
 ```bash
-bash .github/skills/list-repositories/list-repositories.sh default_organization MyProject
+bash .github/skills/list-repositories/list-repositories.sh myorg MyProject
 ```
 
 ```powershell
-.\github\skills\list-repositories\list-repositories.ps1 default_organization MyProject
+.\github\skills\list-repositories\list-repositories.ps1 myorg MyProject
 ```
 
 ## Output

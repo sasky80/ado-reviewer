@@ -19,7 +19,7 @@ Run the [update-pr-thread.sh](./update-pr-thread.sh) script on macOS/Linux or [u
 
 | # | Name | Required | Description |
 |---|------|----------|-------------|
-| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
@@ -33,24 +33,24 @@ At least one of `reply` or `status` must be provided.
 
 ```bash
 # Reply and mark as fixed
-bash .github/skills/update-pr-thread/update-pr-thread.sh default_organization MyProject MyRepo 42 7 "Fixed: refactored to use parameterized queries." fixed
+bash .github/skills/update-pr-thread/update-pr-thread.sh myorg MyProject MyRepo 42 7 "Fixed: refactored to use parameterized queries." fixed
 
 # Reply only (keep thread active)
-bash .github/skills/update-pr-thread/update-pr-thread.sh default_organization MyProject MyRepo 42 7 "Working on this, will push a fix shortly."
+bash .github/skills/update-pr-thread/update-pr-thread.sh myorg MyProject MyRepo 42 7 "Working on this, will push a fix shortly."
 
 # Update status only (no reply)
-bash .github/skills/update-pr-thread/update-pr-thread.sh default_organization MyProject MyRepo 42 7 - fixed
+bash .github/skills/update-pr-thread/update-pr-thread.sh myorg MyProject MyRepo 42 7 - fixed
 ```
 
 ```powershell
 # Reply and mark as fixed (Windows)
-.\github\skills\update-pr-thread\update-pr-thread.ps1 default_organization MyProject MyRepo 42 7 "Fixed: refactored to use parameterized queries." fixed
+.\github\skills\update-pr-thread\update-pr-thread.ps1 myorg MyProject MyRepo 42 7 "Fixed: refactored to use parameterized queries." fixed
 
 # Reply only (keep thread active) (Windows)
-.\github\skills\update-pr-thread\update-pr-thread.ps1 default_organization MyProject MyRepo 42 7 "Working on this, will push a fix shortly."
+.\github\skills\update-pr-thread\update-pr-thread.ps1 myorg MyProject MyRepo 42 7 "Working on this, will push a fix shortly."
 
 # Update status only (no reply) (Windows)
-.\github\skills\update-pr-thread\update-pr-thread.ps1 default_organization MyProject MyRepo 42 7 - fixed
+.\github\skills\update-pr-thread\update-pr-thread.ps1 myorg MyProject MyRepo 42 7 - fixed
 ```
 
 ## Output

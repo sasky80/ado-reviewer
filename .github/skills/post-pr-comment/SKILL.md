@@ -19,30 +19,30 @@ Run the [post-pr-comment.sh](./post-pr-comment.sh) script on macOS/Linux or [pos
 
 | # | Name | Required | Description |
 |---|------|----------|-------------|
-| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
-| 5 | filePath | No | File path for inline comment (use `-` for a general comment) |
-| 6 | line | No | Line number for inline comment (ignored for general comments) |
+| 5 | filePath | Yes | File path for inline comment (use `-` for a general comment) |
+| 6 | line | Yes | Line number for inline comment (use `0` for general comments) |
 | 7 | comment | Yes | Comment text (supports Markdown) |
 
 ## Examples
 
 ```bash
 # Inline comment on a specific file and line
-bash .github/skills/post-pr-comment/post-pr-comment.sh default_organization MyProject MyRepo 42 /src/app.js 15 "Consider using const here."
+bash .github/skills/post-pr-comment/post-pr-comment.sh myorg MyProject MyRepo 42 /src/app.js 15 "Consider using const here."
 
 # General PR-level comment
-bash .github/skills/post-pr-comment/post-pr-comment.sh default_organization MyProject MyRepo 42 - 0 "Overall the code looks good."
+bash .github/skills/post-pr-comment/post-pr-comment.sh myorg MyProject MyRepo 42 - 0 "Overall the code looks good."
 ```
 
 ```powershell
 # Inline comment on a specific file and line (Windows)
-.\github\skills\post-pr-comment\post-pr-comment.ps1 default_organization MyProject MyRepo 42 /src/app.js 15 "Consider using const here."
+.\github\skills\post-pr-comment\post-pr-comment.ps1 myorg MyProject MyRepo 42 /src/app.js 15 "Consider using const here."
 
 # General PR-level comment (Windows)
-.\github\skills\post-pr-comment\post-pr-comment.ps1 default_organization MyProject MyRepo 42 - 0 "Overall the code looks good."
+.\github\skills\post-pr-comment\post-pr-comment.ps1 myorg MyProject MyRepo 42 - 0 "Overall the code looks good."
 ```
 
 ## Formatting Note

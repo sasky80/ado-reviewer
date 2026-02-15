@@ -20,26 +20,12 @@ FILE_PATH="${5:--}"
 LINE="${6:-0}"
 COMMENT="$7"
 
-urlencode() {
-  python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "$1"
-}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../common/ado-utils.sh"
 
-PAT_SUFFIX="${ORG//[^A-Za-z0-9_]/_}"
-if [[ "$PAT_SUFFIX" =~ ^[0-9] ]]; then
-  PAT_SUFFIX="_${PAT_SUFFIX}"
-fi
-PAT_VAR="ADO_PAT_${PAT_SUFFIX}"
-PAT="$(printenv "$PAT_VAR" || true)"
-if [[ -z "$PAT" ]]; then
-  echo "Environment variable $PAT_VAR is not set" >&2
-  exit 1
-fi
-
-ORG_ENC="$(urlencode "$ORG")"
+ado_init "$ORG"
 PROJECT_ENC="$(urlencode "$PROJECT")"
 REPO_ID_ENC="$(urlencode "$REPO_ID")"
-
-ENCODED=$(printf ":%s" "$PAT" | base64 | tr -d '\n')
 
 # Build the entire JSON body safely using Python to avoid injection
 if [[ "$FILE_PATH" == "-" || -z "$FILE_PATH" ]]; then
@@ -53,6 +39,9 @@ print(json.dumps({
 " "$COMMENT")
 else
   LINE_NUM=${LINE:-1}
+  if [[ "$LINE_NUM" -lt 1 ]]; then
+    LINE_NUM=1
+  fi
   BODY=$(python3 -c "
 import json, sys
 comment, fpath, line_num = sys.argv[1], sys.argv[2], int(sys.argv[3])
@@ -68,9 +57,9 @@ print(json.dumps({
 " "$COMMENT" "$FILE_PATH" "$LINE_NUM")
 fi
 
-curl -s --fail-with-body \
+curl -s --fail-with-body --max-time 30 \
   -X POST \
-  -H "Authorization: Basic ${ENCODED}" \
+  -H "Authorization: Basic ${ADO_AUTH}" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d "$BODY" \

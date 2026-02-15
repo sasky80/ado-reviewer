@@ -1,20 +1,23 @@
 # Azure DevOps Copilot Skills
 
-Script-based Copilot agent skills for Azure DevOps — includes a code-reviewer prompt and
-skills for pull request analysis, repository browsing, and project discovery.
+Copilot prompts (`/pr-review` and `/sec-review`) + cross-platform skills (Bash/PowerShell)
+for Azure DevOps pull request workflows, including review voting, thread actions,
+and dependency security advisory checks.
 
 The setup uses:
 
-- Prompt file: [.github/copilot/code-reviewer.prompt.md](.github/copilot/code-reviewer.prompt.md)
+- Prompt files: [.github/prompts/pr-review.prompt.md](.github/prompts/pr-review.prompt.md), [.github/prompts/sec-review.prompt.md](.github/prompts/sec-review.prompt.md)
 - Skills: [.github/skills/](.github/skills/)
 - Validation scripts: [scripts/validate-skills.sh](scripts/validate-skills.sh), [scripts/validate-skills.ps1](scripts/validate-skills.ps1)
 
 ## Contents
 
 - [Quick Start](#quick-start)
+- [Prompt Commands](#prompt-commands)
 - [Requirements](#requirements)
 - [Setup Instructions](#setup-instructions)
 - [Prompt Examples (Voting)](#prompt-examples-voting)
+- [Security Audit Prompt](#security-audit-prompt)
 - [Environment Variables (OS-specific)](#environment-variables-os-specific)
 - [Copying Files to Another Repository](#copying-files-to-another-repository)
 - [Skills Description](#skills-description)
@@ -38,20 +41,39 @@ ITERATION="<your_iteration_id>"
 # Normalization: replace non-[A-Za-z0-9_] with _, then prefix _ if it starts with a digit
 # Examples: my-org -> ADO_PAT_my_org, 123-org -> ADO_PAT__123_org
 export ADO_PAT_<your_normalized_org>="<your_pat>"
+# Optional but recommended for dependency vulnerability checks:
+export GH_SEC_PAT="<your_github_pat>"
 bash .github/skills/get-pr-details/get-pr-details.sh "$ORG" "$PROJECT" "$REPO" "$PR"
 ```
 
 Use this for a fast smoke test. For full setup (including validation and command examples),
 follow [Setup Instructions](#setup-instructions).
 
+## Prompt Commands
+
+Use these slash prompts in Copilot chat:
+
+```text
+/pr-review review pr 1
+/sec-review
+```
+
+Scoped security audit examples:
+
+```text
+/sec-review src/
+/sec-review focus on auth
+```
+
 ## Requirements
 
 - Azure DevOps Personal Access Token (PAT) with **Code** scope (read/write as needed)
+- GitHub Personal Access Token (PAT) for advisory checks via `get-github-advisories` (stored in `GH_SEC_PAT`)
 
 macOS/Linux (`.sh` skills):
 
 - Bash shell
-- `curl`
+- `curl` (7.76+ required for `--fail-with-body` flag)
 - `python3`
 - `base64` utility
 
@@ -81,7 +103,7 @@ Get-Command Invoke-RestMethod
 2. Set the Azure DevOps PAT environment variable (`ADO_PAT_<normalized_org>`) — see
   [Environment Variables](#environment-variables-os-specific) below.
 3. If you use placeholder examples in prompts/commands, replace
-  `default_organization`, `project`, and
+  `organization`, `project`, and
   `repository` with your real values.
 4. *(Optional)* Validate skill connectivity/authentication (use the script matching your OS):
 
@@ -100,7 +122,7 @@ Get-Command Invoke-RestMethod
 5. Start reviewing — open the Copilot chat and use the reviewer prompt command:
 
     ```text
-    /code-reviewer review pr 1
+    /pr-review review pr 1
     ```
 
     Using the command form helps force the agent to use the predefined prompt and skills.
@@ -109,7 +131,7 @@ Get-Command Invoke-RestMethod
     You can also be explicit:
 
     ```text
-    /code-reviewer review pr 1 in myorg/myproject/myrepo
+    /pr-review review pr 1 in myorg/myproject/myrepo
     ```
 
 ## Prompt Examples (Voting)
@@ -117,11 +139,11 @@ Get-Command Invoke-RestMethod
 Use these prompt examples in Copilot chat:
 
 ```text
-/code-reviewer approve pr 1
-/code-reviewer approve with suggestions pr 1
-/code-reviewer wait for author pr 1
-/code-reviewer reject pr 1
-/code-reviewer reset feedback pr 1
+/pr-review approve pr 1
+/pr-review approve with suggestions pr 1
+/pr-review wait for author pr 1
+/pr-review reject pr 1
+/pr-review reset feedback pr 1
 ```
 
 Legend: `approve=10`, `approve with suggestions=5`, `wait for author=-5`, `reject=-10`, `reset feedback=0`.
@@ -129,17 +151,41 @@ Legend: `approve=10`, `approve with suggestions=5`, `wait for author=-5`, `rejec
 Explicit org/project/repo form:
 
 ```text
-/code-reviewer approve pr 1 in myorg/myproject/myrepo
-/code-reviewer approve with suggestions pr 1 in myorg/myproject/myrepo
-/code-reviewer wait for author pr 1 in myorg/myproject/myrepo
-/code-reviewer reject pr 1 in myorg/myproject/myrepo
-/code-reviewer reset feedback pr 1 in myorg/myproject/myrepo
+/pr-review approve pr 1 in myorg/myproject/myrepo
+/pr-review approve with suggestions pr 1 in myorg/myproject/myrepo
+/pr-review wait for author pr 1 in myorg/myproject/myrepo
+/pr-review reject pr 1 in myorg/myproject/myrepo
+/pr-review reset feedback pr 1 in myorg/myproject/myrepo
+```
+
+## Security Audit Prompt
+
+Use this prompt in Copilot chat to run a security-focused audit of the current workspace:
+
+```text
+/sec-review
+```
+
+Optional scoped forms:
+
+```text
+/sec-review <path-or-folder>
+/sec-review focus on <area>
+```
+
+Examples:
+
+```text
+/sec-review src/
+/sec-review focus on auth
 ```
 
 ## Environment Variables (OS-specific)
 
 Each skill reads the Azure DevOps PAT from an environment variable named
 `ADO_PAT_<normalized_org>`.
+
+The GitHub advisory skill reads a GitHub PAT from `GH_SEC_PAT`.
 
 Normalization rule (must match scripts):
 
@@ -218,11 +264,22 @@ echo 'export ADO_PAT_my_org="<your_pat>"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
+GitHub PAT for advisory checks (current session):
+
+```bash
+export GH_SEC_PAT="<your_github_pat>"
+```
+
+```powershell
+$env:GH_SEC_PAT = "<your_github_pat>"
+```
+
 ## Copying Files to Another Repository
 
 If you want to reuse these skills in another repository, copy the following paths:
 
-- `.github/copilot/code-reviewer.prompt.md`
+- `.github/prompts/pr-review.prompt.md`
+- `.github/prompts/sec-review.prompt.md`
 - `.github/skills/` (entire folder, including all `SKILL.md`, `.sh`, and `.ps1` files)
 - `scripts/validate-skills.sh` and `scripts/validate-skills.ps1`
 
@@ -231,8 +288,9 @@ Example from this repo root:
 ```bash
 TARGET_REPO=/path/to/your-repo
 
-mkdir -p "$TARGET_REPO/.github/copilot" "$TARGET_REPO/.github/skills" "$TARGET_REPO/scripts"
-cp .github/copilot/code-reviewer.prompt.md "$TARGET_REPO/.github/copilot/"
+mkdir -p "$TARGET_REPO/.github/prompts" "$TARGET_REPO/.github/skills" "$TARGET_REPO/scripts"
+cp .github/prompts/pr-review.prompt.md "$TARGET_REPO/.github/prompts/"
+cp .github/prompts/sec-review.prompt.md "$TARGET_REPO/.github/prompts/"
 cp -R .github/skills/* "$TARGET_REPO/.github/skills/"
 cp scripts/validate-skills.sh "$TARGET_REPO/scripts/"
 cp scripts/validate-skills.ps1 "$TARGET_REPO/scripts/"
@@ -256,7 +314,7 @@ Set-Location C:\path\to\your-repo
 
 ## Skills Description
 
-All skills call Azure DevOps REST API (`api-version=7.2-preview`).
+Most skills call Azure DevOps REST API (`api-version=7.2-preview`).
 
 - macOS/Linux: use `.sh` scripts
 - Windows: use `.ps1` scripts (same folder, same argument order)
@@ -271,6 +329,8 @@ All skills call Azure DevOps REST API (`api-version=7.2-preview`).
 | `get-commit-diffs` | `.github/skills/get-commit-diffs/get-commit-diffs.sh` | Returns diff summary between two versions. |
 | `list-repositories` | `.github/skills/list-repositories/list-repositories.sh` | Lists repositories in a project. |
 | `list-projects` | `.github/skills/list-projects/list-projects.sh` | Lists projects in an organization. |
+| `get-github-advisories` | `.github/skills/get-github-advisories/get-github-advisories.sh` | Queries GitHub Advisory Database for vulnerabilities affecting `package` or `package@version` within an ecosystem. |
+| `get-pr-dependency-advisories` | `.github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.sh` | Scans changed dependency manifests in a PR and queries GitHub advisories automatically. |
 | `post-pr-comment` | `.github/skills/post-pr-comment/post-pr-comment.sh` | Posts a comment thread on a PR (inline or general). |
 | `update-pr-thread` | `.github/skills/update-pr-thread/update-pr-thread.sh` | Replies to a comment thread and/or updates its status (fixed, closed, etc.). |
 | `accept-pr` | `.github/skills/accept-pr/accept-pr.sh` | Approves (accepts) a pull request by casting an Approve vote. |
@@ -278,6 +338,7 @@ All skills call Azure DevOps REST API (`api-version=7.2-preview`).
 | `wait-for-author` | `.github/skills/wait-for-author/wait-for-author.sh` | Casts a Waiting for author vote on a pull request. |
 | `reject-pr` | `.github/skills/reject-pr/reject-pr.sh` | Casts a Rejected vote on a pull request. |
 | `reset-feedback` | `.github/skills/reset-feedback/reset-feedback.sh` | Resets reviewer vote to No vote on a pull request. |
+| `check-deprecated-dependencies` | `.github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh` | Checks whether a dependency is deprecated across ecosystems (npm, pip, nuget). |
 
 ## Before First Review
 
@@ -286,14 +347,14 @@ Before the first review in a repository, tell the reviewer where your standards/
 Example:
 
 ```text
-/code-reviewer review pr 1 in myorg/myproject/myrepo.
+/pr-review review pr 1 in myorg/myproject/myrepo.
 Standards/guides are in docs/engineering/standards.md and docs/guides/.
 ```
 
 If you do not specify paths, the reviewer checks common defaults (`README*`,
 `CONTRIBUTING.md`, `.editorconfig`, `docs/`, linter/formatter configs).
 
-**Recommended:** update `.github/copilot/code-reviewer.prompt.md` with
+**Recommended:** update `.github/prompts/pr-review.prompt.md` with
 repository-specific standards paths so they apply by default.
 
 > Source alignment note: reviewer behavior and decision rules in the prompt file are
@@ -308,8 +369,19 @@ repository-specific standards paths so they apply by default.
 5. `get-file-content` to compare file versions (target branch and source branch).
 6. `get-pr-threads` to avoid duplicate comments.
 7. Optional: `get-commit-diffs` for a high-level diff summary.
-8. `post-pr-comment` to publish selected findings.
-9. `update-pr-thread` to reply and resolve threads.
+8. Optional (dependency changes): `get-pr-dependency-advisories` to automatically scan changed manifests and query advisories.
+9. `post-pr-comment` to publish selected findings.
+10. `update-pr-thread` to reply and resolve threads.
+
+Dependency advisory example:
+
+```bash
+bash .github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.sh "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION"
+```
+
+```powershell
+.\github\skills\get-pr-dependency-advisories\get-pr-dependency-advisories.ps1 $Org $Project $Repo $Pr $Iteration
+```
 
 ## Validation (Optional)
 

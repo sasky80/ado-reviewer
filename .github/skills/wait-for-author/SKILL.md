@@ -1,4 +1,3 @@
-````skill
 ---
 name: wait-for-author
 description: >
@@ -19,7 +18,7 @@ Run the [wait-for-author.sh](./wait-for-author.sh) script on macOS/Linux or [wai
 
 | # | Name | Required | Description |
 |---|------|----------|-------------|
-| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
@@ -27,16 +26,14 @@ Run the [wait-for-author.sh](./wait-for-author.sh) script on macOS/Linux or [wai
 ## Example
 
 ```bash
-bash .github/skills/wait-for-author/wait-for-author.sh default_organization MyProject MyRepo 42
+bash .github/skills/wait-for-author/wait-for-author.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
-.\github\skills\wait-for-author\wait-for-author.ps1 default_organization MyProject MyRepo 42
+.\github\skills\wait-for-author\wait-for-author.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output
 
 Returns JSON with the reviewer vote object.
 A `vote` value of `-5` means **Waiting for author**.
-
-````

@@ -19,7 +19,7 @@ Run the [get-pr-changes.sh](./get-pr-changes.sh) script on macOS/Linux or [get-p
 
 | # | Name | Required | Description |
 |---|------|----------|-------------|
-| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
@@ -28,11 +28,11 @@ Run the [get-pr-changes.sh](./get-pr-changes.sh) script on macOS/Linux or [get-p
 ## Example
 
 ```bash
-bash .github/skills/get-pr-changes/get-pr-changes.sh default_organization MyProject MyRepo 42 3
+bash .github/skills/get-pr-changes/get-pr-changes.sh myorg MyProject MyRepo 42 3
 ```
 
 ```powershell
-.\github\skills\get-pr-changes\get-pr-changes.ps1 default_organization MyProject MyRepo 42 3
+.\github\skills\get-pr-changes\get-pr-changes.ps1 myorg MyProject MyRepo 42 3
 ```
 
 ## Output

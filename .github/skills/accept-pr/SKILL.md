@@ -19,7 +19,7 @@ Run the [accept-pr.sh](./accept-pr.sh) script on macOS/Linux or [accept-pr.ps1](
 
 | # | Name | Required | Description |
 |---|------|----------|-------------|
-| 1 | organization | No | Azure DevOps organization (default: `default_organization`) |
+| 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
@@ -28,12 +28,12 @@ Run the [accept-pr.sh](./accept-pr.sh) script on macOS/Linux or [accept-pr.ps1](
 
 ```bash
 # Approve PR 42
-bash .github/skills/accept-pr/accept-pr.sh default_organization MyProject MyRepo 42
+bash .github/skills/accept-pr/accept-pr.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
 # Approve PR 42 (Windows)
-.\github\skills\accept-pr\accept-pr.ps1 default_organization MyProject MyRepo 42
+.\github\skills\accept-pr\accept-pr.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output
