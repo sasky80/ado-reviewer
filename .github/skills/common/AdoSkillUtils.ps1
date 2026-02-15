@@ -103,6 +103,37 @@ function Write-Json {
     $InputObject | ConvertTo-Json -Depth 100 -Compress
 }
 
+function ConvertTo-AdoFilePath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$FilePath
+    )
+
+    if ($FilePath -eq '-' -or [string]::IsNullOrWhiteSpace($FilePath)) {
+        return $FilePath
+    }
+
+    $normalized = $FilePath.Trim() -replace '\\', '/'
+
+    if ($normalized -match '^[A-Za-z]:/' -or $normalized.StartsWith('//')) {
+        throw "FilePath must be repository-relative (for example: /src/app.js). Received: '$FilePath'"
+    }
+
+    while ($normalized.StartsWith('./')) {
+        $normalized = $normalized.Substring(2)
+    }
+
+    while ($normalized.Contains('//')) {
+        $normalized = $normalized -replace '//', '/'
+    }
+
+    if (-not $normalized.StartsWith('/')) {
+        $normalized = "/$normalized"
+    }
+
+    return $normalized
+}
+
 function Invoke-AdoRequest {
     param(
         [Parameter(Mandatory = $true)]

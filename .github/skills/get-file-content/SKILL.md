@@ -22,11 +22,11 @@ Run the [get-file-content.sh](./get-file-content.sh) script on macOS/Linux or [g
 | 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 | 3 | repositoryId | Yes | Repository name or ID |
-| 4 | path | Yes | File path in the repo (e.g. `/src/app.js`) |
+| 4 | path | Yes | Repository-relative file path in canonical form (e.g. `/src/app.js`) |
 | 5 | version | No | Version string – commit SHA, branch name, or tag |
 | 6 | versionType | No | Version type: `branch`, `commit`, or `tag` (default: `branch`) |
 
-## Example
+## Examples
 
 ```bash
 # Get file from a specific branch

@@ -22,6 +22,7 @@ source "$SCRIPT_DIR/../common/ado-utils.sh"
 ado_init "$ORG"
 PROJECT_ENC="$(urlencode "$PROJECT")"
 REPO_ID_ENC="$(urlencode "$REPO_ID")"
+FILE_PATH="$(normalize_ado_file_path "$FILE_PATH")"
 FILE_PATH_ENC="$(urlencode "$FILE_PATH")"
 
 URL="https://dev.azure.com/${ORG_ENC}/${PROJECT_ENC}/_apis/git/repositories/${REPO_ID_ENC}/items?path=${FILE_PATH_ENC}&includeContent=true&api-version=7.2-preview"

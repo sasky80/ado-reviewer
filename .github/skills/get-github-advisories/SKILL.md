@@ -8,7 +8,7 @@ description: Query the GitHub Advisory Database for vulnerabilities affecting a 
 ## Platform Note
 
 - macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts with the same argument order
+- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
 
 Run the [get-github-advisories.sh](./get-github-advisories.sh) script on macOS/Linux or [get-github-advisories.ps1](./get-github-advisories.ps1) on Windows to list global security advisories.
 
@@ -29,14 +29,14 @@ Set `GH_SEC_PAT` to a GitHub Personal Access Token.
 | 4 | severity | No | Advisory severity filter (`low`, `medium`, `high`, `critical`, `unknown`) |
 | 5 | per_page | No | Max advisories to return (1..100, default: 30) |
 
-## Example
+## Examples
 
 ```bash
 bash .github/skills/get-github-advisories/get-github-advisories.sh npm lodash 4.17.20 high 20
 ```
 
 ```powershell
-.\github\skills\get-github-advisories\get-github-advisories.ps1 npm lodash 4.17.20 high 20
+pwsh -ExecutionPolicy Bypass -File .\github\skills\get-github-advisories\get-github-advisories.ps1 npm lodash 4.17.20 high 20
 ```
 
 ## Output

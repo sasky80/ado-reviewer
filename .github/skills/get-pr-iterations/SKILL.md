@@ -11,7 +11,7 @@ description: >
 ## Platform Note
 
 - macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts with the same argument order
+- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
 
 Run the [get-pr-iterations.sh](./get-pr-iterations.sh) script on macOS/Linux or [get-pr-iterations.ps1](./get-pr-iterations.ps1) on Windows to list iterations.
 
@@ -24,14 +24,14 @@ Run the [get-pr-iterations.sh](./get-pr-iterations.sh) script on macOS/Linux or 
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
 
-## Example
+## Examples
 
 ```bash
 bash .github/skills/get-pr-iterations/get-pr-iterations.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
-.\github\skills\get-pr-iterations\get-pr-iterations.ps1 myorg MyProject MyRepo 42
+pwsh -ExecutionPolicy Bypass -File .\github\skills\get-pr-iterations\get-pr-iterations.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output

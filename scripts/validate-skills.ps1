@@ -51,11 +51,11 @@ function Test-SkillCheck {
     param(
         [Parameter(Mandatory = $true)][string]$Name,
         [Parameter(Mandatory = $true)][string]$ScriptPath,
-        [Parameter(Mandatory = $true)][string[]]$Args
+        [Parameter(Mandatory = $true)][string[]]$SkillArgs
     )
 
     Write-Output "--- $Name ---"
-    $output = & $ScriptPath @Args 2>&1 | Out-String
+    $output = & $ScriptPath @SkillArgs 2>&1 | Out-String
     if ($LASTEXITCODE -ne 0) {
         Write-Output 'FAIL (command error)'
         $output.Trim().Split([Environment]::NewLine) | Select-Object -First 8 | ForEach-Object { Write-Output $_ }
@@ -77,19 +77,19 @@ function Test-SkillCheck {
 
 $skillsRoot = Join-Path $PSScriptRoot '..\.github\skills'
 
-Test-SkillCheck -Name 'list-projects' -ScriptPath (Join-Path $skillsRoot 'list-projects\list-projects.ps1') -Args @($Org)
-Test-SkillCheck -Name 'list-repositories' -ScriptPath (Join-Path $skillsRoot 'list-repositories\list-repositories.ps1') -Args @($Org, $Project)
-Test-SkillCheck -Name 'get-pr-details' -ScriptPath (Join-Path $skillsRoot 'get-pr-details\get-pr-details.ps1') -Args @($Org, $Project, $Repo, $Pr)
-Test-SkillCheck -Name 'get-pr-iterations' -ScriptPath (Join-Path $skillsRoot 'get-pr-iterations\get-pr-iterations.ps1') -Args @($Org, $Project, $Repo, $Pr)
-Test-SkillCheck -Name 'get-pr-changes' -ScriptPath (Join-Path $skillsRoot 'get-pr-changes\get-pr-changes.ps1') -Args @($Org, $Project, $Repo, $Pr, $Iteration)
-Test-SkillCheck -Name 'get-pr-threads' -ScriptPath (Join-Path $skillsRoot 'get-pr-threads\get-pr-threads.ps1') -Args @($Org, $Project, $Repo, $Pr)
+Test-SkillCheck -Name 'list-projects' -ScriptPath (Join-Path $skillsRoot 'list-projects\list-projects.ps1') -SkillArgs @($Org)
+Test-SkillCheck -Name 'list-repositories' -ScriptPath (Join-Path $skillsRoot 'list-repositories\list-repositories.ps1') -SkillArgs @($Org, $Project)
+Test-SkillCheck -Name 'get-pr-details' -ScriptPath (Join-Path $skillsRoot 'get-pr-details\get-pr-details.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr)
+Test-SkillCheck -Name 'get-pr-iterations' -ScriptPath (Join-Path $skillsRoot 'get-pr-iterations\get-pr-iterations.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr)
+Test-SkillCheck -Name 'get-pr-changes' -ScriptPath (Join-Path $skillsRoot 'get-pr-changes\get-pr-changes.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr, $Iteration)
+Test-SkillCheck -Name 'get-pr-threads' -ScriptPath (Join-Path $skillsRoot 'get-pr-threads\get-pr-threads.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr)
 
 $ghToken = [Environment]::GetEnvironmentVariable('GH_SEC_PAT', 'Process')
 if ([string]::IsNullOrWhiteSpace($ghToken)) { $ghToken = [Environment]::GetEnvironmentVariable('GH_SEC_PAT', 'User') }
 if ([string]::IsNullOrWhiteSpace($ghToken)) { $ghToken = [Environment]::GetEnvironmentVariable('GH_SEC_PAT', 'Machine') }
 if (-not [string]::IsNullOrWhiteSpace($ghToken)) {
-    Test-SkillCheck -Name 'get-github-advisories' -ScriptPath (Join-Path $skillsRoot 'get-github-advisories\get-github-advisories.ps1') -Args @('npm', 'lodash', '4.17.20', 'high', '10')
-    Test-SkillCheck -Name 'get-pr-dependency-advisories' -ScriptPath (Join-Path $skillsRoot 'get-pr-dependency-advisories\get-pr-dependency-advisories.ps1') -Args @($Org, $Project, $Repo, $Pr, $Iteration)
+    Test-SkillCheck -Name 'get-github-advisories' -ScriptPath (Join-Path $skillsRoot 'get-github-advisories\get-github-advisories.ps1') -SkillArgs @('npm', 'lodash', '4.17.20', 'high', '10')
+    Test-SkillCheck -Name 'get-pr-dependency-advisories' -ScriptPath (Join-Path $skillsRoot 'get-pr-dependency-advisories\get-pr-dependency-advisories.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr, $Iteration)
 }
 else {
     Write-Output '--- get-github-advisories ---'
@@ -99,27 +99,19 @@ else {
 }
 
 if (Get-Command npm -ErrorAction SilentlyContinue) {
-    Test-SkillCheck -Name 'check-deprecated-dependencies (npm)' -ScriptPath (Join-Path $skillsRoot 'check-deprecated-dependencies\check-deprecated-dependencies.ps1') -Args @('npm', 'lodash', '4.17.21')
+    Test-SkillCheck -Name 'check-deprecated-dependencies (npm)' -ScriptPath (Join-Path $skillsRoot 'check-deprecated-dependencies\check-deprecated-dependencies.ps1') -SkillArgs @('npm', 'lodash', '4.17.21')
 }
 else {
     Write-Output '--- check-deprecated-dependencies (npm) ---'
     Write-Output 'SKIP (npm is not available)'
 }
 
-if (Get-Command Invoke-RestMethod -ErrorAction SilentlyContinue) {
-    Test-SkillCheck -Name 'check-deprecated-dependencies (pip)' -ScriptPath (Join-Path $skillsRoot 'check-deprecated-dependencies\check-deprecated-dependencies.ps1') -Args @('pip', 'requests', '2.31.0')
-    Test-SkillCheck -Name 'check-deprecated-dependencies (nuget)' -ScriptPath (Join-Path $skillsRoot 'check-deprecated-dependencies\check-deprecated-dependencies.ps1') -Args @('nuget', 'Newtonsoft.Json', '13.0.3')
-}
-else {
-    Write-Output '--- check-deprecated-dependencies (pip) ---'
-    Write-Output 'SKIP (Invoke-RestMethod is not available)'
-    Write-Output '--- check-deprecated-dependencies (nuget) ---'
-    Write-Output 'SKIP (Invoke-RestMethod is not available)'
-}
+Test-SkillCheck -Name 'check-deprecated-dependencies (pip)' -ScriptPath (Join-Path $skillsRoot 'check-deprecated-dependencies\check-deprecated-dependencies.ps1') -SkillArgs @('pip', 'requests', '2.31.0')
+Test-SkillCheck -Name 'check-deprecated-dependencies (nuget)' -ScriptPath (Join-Path $skillsRoot 'check-deprecated-dependencies\check-deprecated-dependencies.ps1') -SkillArgs @('nuget', 'Newtonsoft.Json', '13.0.3')
 
 if (-not [string]::IsNullOrWhiteSpace($TestedFilePath) -and -not [string]::IsNullOrWhiteSpace($BranchBase) -and -not [string]::IsNullOrWhiteSpace($BranchTarget)) {
-    Test-SkillCheck -Name 'get-file-content' -ScriptPath (Join-Path $skillsRoot 'get-file-content\get-file-content.ps1') -Args @($Org, $Project, $Repo, $TestedFilePath, $BranchTarget, 'branch')
-    Test-SkillCheck -Name 'get-commit-diffs' -ScriptPath (Join-Path $skillsRoot 'get-commit-diffs\get-commit-diffs.ps1') -Args @($Org, $Project, $Repo, $BranchBase, $BranchTarget, 'branch', 'branch')
+    Test-SkillCheck -Name 'get-file-content' -ScriptPath (Join-Path $skillsRoot 'get-file-content\get-file-content.ps1') -SkillArgs @($Org, $Project, $Repo, $TestedFilePath, $BranchTarget, 'branch')
+    Test-SkillCheck -Name 'get-commit-diffs' -ScriptPath (Join-Path $skillsRoot 'get-commit-diffs\get-commit-diffs.ps1') -SkillArgs @($Org, $Project, $Repo, $BranchBase, $BranchTarget, 'branch', 'branch')
 }
 else {
     Write-Output '--- get-file-content ---'
@@ -129,13 +121,16 @@ else {
 }
 
 if ($env:ENABLE_MUTATING_CHECKS -eq 'true') {
-    Test-SkillCheck -Name 'approve-with-suggestions' -ScriptPath (Join-Path $skillsRoot 'approve-with-suggestions\approve-with-suggestions.ps1') -Args @($Org, $Project, $Repo, $Pr)
-    Test-SkillCheck -Name 'wait-for-author' -ScriptPath (Join-Path $skillsRoot 'wait-for-author\wait-for-author.ps1') -Args @($Org, $Project, $Repo, $Pr)
-    Test-SkillCheck -Name 'reject-pr' -ScriptPath (Join-Path $skillsRoot 'reject-pr\reject-pr.ps1') -Args @($Org, $Project, $Repo, $Pr)
-    Test-SkillCheck -Name 'reset-feedback' -ScriptPath (Join-Path $skillsRoot 'reset-feedback\reset-feedback.ps1') -Args @($Org, $Project, $Repo, $Pr)
-    Test-SkillCheck -Name 'accept-pr' -ScriptPath (Join-Path $skillsRoot 'accept-pr\accept-pr.ps1') -Args @($Org, $Project, $Repo, $Pr)
+    Test-SkillCheck -Name 'post-pr-comment' -ScriptPath (Join-Path $skillsRoot 'post-pr-comment\post-pr-comment.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr, '-', '0', '[validate-skills] smoke test comment')
+    Test-SkillCheck -Name 'approve-with-suggestions' -ScriptPath (Join-Path $skillsRoot 'approve-with-suggestions\approve-with-suggestions.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr)
+    Test-SkillCheck -Name 'wait-for-author' -ScriptPath (Join-Path $skillsRoot 'wait-for-author\wait-for-author.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr)
+    Test-SkillCheck -Name 'reject-pr' -ScriptPath (Join-Path $skillsRoot 'reject-pr\reject-pr.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr)
+    Test-SkillCheck -Name 'reset-feedback' -ScriptPath (Join-Path $skillsRoot 'reset-feedback\reset-feedback.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr)
+    Test-SkillCheck -Name 'accept-pr' -ScriptPath (Join-Path $skillsRoot 'accept-pr\accept-pr.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr)
 }
 else {
+    Write-Output '--- post-pr-comment ---'
+    Write-Output 'SKIP (mutating check disabled; set ENABLE_MUTATING_CHECKS=true to enable)'
     Write-Output '--- approve-with-suggestions ---'
     Write-Output 'SKIP (mutating check disabled; set ENABLE_MUTATING_CHECKS=true to enable)'
     Write-Output '--- wait-for-author ---'
@@ -177,7 +172,7 @@ catch {
 }
 
 if (-not [string]::IsNullOrWhiteSpace($threadId)) {
-    Test-SkillCheck -Name 'update-pr-thread' -ScriptPath (Join-Path $skillsRoot 'update-pr-thread\update-pr-thread.ps1') -Args @($Org, $Project, $Repo, $Pr, $threadId, '-', 'active')
+    Test-SkillCheck -Name 'update-pr-thread' -ScriptPath (Join-Path $skillsRoot 'update-pr-thread\update-pr-thread.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr, $threadId, '-', 'active')
 }
 else {
     Write-Output '--- update-pr-thread ---'

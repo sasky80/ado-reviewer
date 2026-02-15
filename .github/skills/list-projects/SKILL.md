@@ -10,7 +10,7 @@ description: >
 ## Platform Note
 
 - macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts with the same argument order
+- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
 
 Run the [list-projects.sh](./list-projects.sh) script on macOS/Linux or [list-projects.ps1](./list-projects.ps1) on Windows to list projects.
 
@@ -20,14 +20,14 @@ Run the [list-projects.sh](./list-projects.sh) script on macOS/Linux or [list-pr
 |---|------|----------|-------------|
 | 1 | organization | Yes | Azure DevOps organization |
 
-## Example
+## Examples
 
 ```bash
 bash .github/skills/list-projects/list-projects.sh myorg
 ```
 
 ```powershell
-.\github\skills\list-projects\list-projects.ps1 myorg
+pwsh -ExecutionPolicy Bypass -File .\github\skills\list-projects\list-projects.ps1 myorg
 ```
 
 ## Output

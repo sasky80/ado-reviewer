@@ -50,7 +50,13 @@ $headers = @{
 
 try {
     $response = Invoke-RestMethod -Method GET -Uri $url -Headers $headers
-    $response | ConvertTo-Json -Depth 100 -Compress
+    if ($null -eq $response) {
+        $advisories = @()
+    }
+    else {
+        $advisories = @($response)
+    }
+    ConvertTo-Json -InputObject $advisories -Depth 100 -Compress
 }
 catch {
     $errorMessage = $_.Exception.Message

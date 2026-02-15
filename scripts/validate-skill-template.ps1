@@ -17,6 +17,6 @@ Set-Location $rootDir
 # Validation is non-mutating by default.
 # To include mutating checks (e.g. accept-pr, approve-with-suggestions,
 # wait-for-author, reject-pr, reset-feedback), run with:
-# $env:ENABLE_MUTATING_CHECKS='true'; .\scripts\validate-skill-local.ps1
+# $env:ENABLE_MUTATING_CHECKS='true'; pwsh -ExecutionPolicy Bypass -File .\scripts\validate-skill-local.ps1
 
-& "$rootDir\scripts\validate-skills.ps1" $Org $Project $Repo $Pr $Iteration $TestedFilePath $BranchBase $BranchTarget
+& "$rootDir\scripts\validate-skills.ps1" -Org $Org -Project $Project -Repo $Repo -Pr $Pr -Iteration $Iteration -TestedFilePath $TestedFilePath -BranchBase $BranchBase -BranchTarget $BranchTarget

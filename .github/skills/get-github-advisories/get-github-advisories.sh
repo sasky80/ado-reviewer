@@ -43,8 +43,10 @@ if [[ -n "$SEVERITY" ]]; then
   QUERY+="&severity=$(urlencode "$SEVERITY")"
 fi
 
-curl -s --fail-with-body --max-time 30 \
+response="$(curl -s --fail-with-body --max-time 30 \
   -H "Accept: application/vnd.github+json" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
   -H "Authorization: Bearer ${GH_TOKEN}" \
-  "https://api.github.com/advisories?${QUERY}"
+  "https://api.github.com/advisories?${QUERY}")"
+
+printf '%s' "$response" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(json.dumps(data if isinstance(data, list) else [], separators=(",",":")))'

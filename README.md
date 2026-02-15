@@ -61,7 +61,7 @@ $env:ADO_PAT_my_org = "<your_pat>"
 # Optional but recommended for dependency vulnerability checks:
 $env:GH_SEC_PAT = "<your_github_pat>"
 
-.\github\skills\get-pr-details\get-pr-details.ps1 $Org $Project $Repo $Pr
+pwsh -ExecutionPolicy Bypass -File .\github\skills\get-pr-details\get-pr-details.ps1 $Org $Project $Repo $Pr
 ```
 
 Use this for a fast smoke test. For full setup (including validation and command examples),
@@ -132,7 +132,7 @@ Get-Command Invoke-RestMethod
    On Windows/PowerShell, use:
 
      ```powershell
-     .\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
+    pwsh -ExecutionPolicy Bypass -File .\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
      ```
 
    Advanced options and reusable wrappers are in [Validation (Optional)](#validation-optional).
@@ -203,6 +203,17 @@ Examples:
 - organization `my-org` => `ADO_PAT_my_org`
 - organization `my org` => `ADO_PAT_my_org`
 - organization `123-org` => `ADO_PAT__123_org`
+
+### PAT Lookup Scope Differences
+
+PowerShell (`.ps1`) scripts search for `ADO_PAT_*` and `GH_SEC_PAT` across three scopes:
+**Process → User → Machine**. This means PATs persisted via
+`[Environment]::SetEnvironmentVariable("...", "...", "User")` are found automatically.
+
+Bash (`.sh`) scripts only check the **current process environment** (`printenv`).
+On macOS/Linux this is the normal behavior — use `export` in your shell.
+On Windows, if you launch `bash` from PowerShell, the child process may **not**
+inherit PowerShell session variables (see [Troubleshooting](#troubleshooting)).
 
 ### macOS / Linux (zsh/bash)
 
@@ -315,7 +326,7 @@ On Windows/PowerShell:
 
 ```powershell
 Set-Location C:\path\to\your-repo
-.\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
+pwsh -ExecutionPolicy Bypass -File .\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
 ```
 
 ## Skills Description
@@ -323,7 +334,7 @@ Set-Location C:\path\to\your-repo
 Most skills call Azure DevOps REST API (`api-version=7.2-preview`).
 
 - macOS/Linux: use `.sh` scripts
-- Windows: use `.ps1` scripts (same folder, same argument order)
+- Windows: use `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` (same folder, same argument order)
 
 | Skill | Script | Description |
 |---|---|---|
@@ -386,7 +397,7 @@ bash .github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.sh
 ```
 
 ```powershell
-.\github\skills\get-pr-dependency-advisories\get-pr-dependency-advisories.ps1 $Org $Project $Repo $Pr $Iteration
+pwsh -ExecutionPolicy Bypass -File .\github\skills\get-pr-dependency-advisories\get-pr-dependency-advisories.ps1 $Org $Project $Repo $Pr $Iteration
 ```
 
 ## Validation (Optional)
@@ -400,7 +411,7 @@ Run all skill checks to confirm authentication and connectivity:
 Windows/PowerShell equivalent:
 
 ```powershell
-.\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
+pwsh -ExecutionPolicy Bypass -File .\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
 ```
 
 Reusable wrappers:
@@ -418,7 +429,7 @@ Reusable wrappers:
   ```powershell
   Copy-Item scripts\validate-skill-template.ps1 scripts\validate-skill-local.ps1
   # edit scripts\validate-skill-local.ps1 with your values, then:
-  .\scripts\validate-skill-local.ps1
+  pwsh -ExecutionPolicy Bypass -File .\scripts\validate-skill-local.ps1
   ```
 
 Optional repository-specific validation inputs:
@@ -442,9 +453,9 @@ export BRANCH_TARGET="feature/my-change"
 ./scripts/validate-skills.sh "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION"
 ```
 
-Validation is non-mutating by default. Mutating checks (such as `accept-pr`,
-`approve-with-suggestions`, `wait-for-author`, `reject-pr`, and `reset-feedback`) are
-skipped unless explicitly enabled:
+Validation is non-mutating by default. Mutating checks (such as `post-pr-comment`,
+`accept-pr`, `approve-with-suggestions`, `wait-for-author`, `reject-pr`, and
+`reset-feedback`) are skipped unless explicitly enabled:
 
 ```bash
 ENABLE_MUTATING_CHECKS=true ./scripts/validate-skills.sh "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION"
@@ -476,8 +487,8 @@ Use these sources for the variables used in examples (`ORG`, `PROJECT`, `REPO`, 
 | `base64: invalid option` | GNU vs BSD flag mismatch | Scripts already handle this — ensure you're using the repo version |
 | `Permission denied` on `.sh` files | Scripts not marked executable | Run `chmod +x .github/skills/*/*.sh scripts/*.sh` |
 | Validation fails but skills work | PR or iteration ID is stale/invalid | Re-check `PR` and `ITERATION` values (see [Where to Find Values](#where-to-find-values)) |
-| Scripts fail on Windows CMD/PowerShell | Wrong script type for current shell (`.sh` vs `.ps1`) | On Windows use `.ps1` skills in PowerShell; on macOS/Linux use `.sh` skills |
-| PAT is set in PowerShell but script says env var is missing | Script is running in a different shell context (commonly WSL bash) | Set `ADO_PAT_<normalized_org>` in the same shell used to run scripts (for WSL: set/export inside WSL) |
+| Scripts fail on Windows CMD/PowerShell | Wrong script type for current shell (`.sh` vs `.ps1`) or restricted PowerShell execution policy | On Windows run `.ps1` using `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...`; on macOS/Linux use `.sh` skills |
+| PAT is set in PowerShell but `.sh` script says env var is missing | Script is running in a different shell context (WSL bash or Git Bash child process) | Set `ADO_PAT_<normalized_org>` in the same shell used to run scripts. For WSL: export inside WSL. For Git Bash launched from PowerShell: export inline, e.g. `bash -c "export ADO_PAT_my_org=$([Environment]::GetEnvironmentVariable('ADO_PAT_my_org','User')); bash .github/skills/..."` |
 | `$'\\r': command not found` in `.sh` scripts | CRLF line endings in local clone | Pull latest, then run `git add --renormalize .` and commit; the repo includes `.gitattributes` with `*.sh text eol=lf` |
 
 ## Contributing

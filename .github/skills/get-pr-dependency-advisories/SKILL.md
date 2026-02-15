@@ -8,7 +8,7 @@ description: Scan changed dependency manifests in a PR and query GitHub Advisory
 ## Platform Note
 
 - macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts with the same argument order
+- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
 
 Run [get-pr-dependency-advisories.sh](./get-pr-dependency-advisories.sh) on macOS/Linux or [get-pr-dependency-advisories.ps1](./get-pr-dependency-advisories.ps1) on Windows.
 
@@ -46,14 +46,14 @@ Run [get-pr-dependency-advisories.sh](./get-pr-dependency-advisories.sh) on macO
 | 5 | iterationId | No | PR iteration ID (defaults to latest) |
 | 6 | per_page | No | Max advisories per dependency query (1..100, default: 20) |
 
-## Example
+## Examples
 
 ```bash
 bash .github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
-.\github\skills\get-pr-dependency-advisories\get-pr-dependency-advisories.ps1 myorg MyProject MyRepo 42
+pwsh -ExecutionPolicy Bypass -File .\github\skills\get-pr-dependency-advisories\get-pr-dependency-advisories.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output

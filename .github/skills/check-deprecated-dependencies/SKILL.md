@@ -8,7 +8,7 @@ description: Check whether a dependency is deprecated across ecosystems (npm, pi
 ## Platform Note
 
 - macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts with the same argument order
+- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
 
 Run [check-deprecated-dependencies.sh](./check-deprecated-dependencies.sh) on macOS/Linux or [check-deprecated-dependencies.ps1](./check-deprecated-dependencies.ps1) on Windows.
 
@@ -32,14 +32,14 @@ Run [check-deprecated-dependencies.sh](./check-deprecated-dependencies.sh) on ma
 | 2 | package | Yes | Package name |
 | 3 | version | No | Package version to inspect |
 
-## Example
+## Examples
 
 ```bash
 bash .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh npm request 2.88.2
 ```
 
 ```powershell
-.github/skills/check-deprecated-dependencies/check-deprecated-dependencies.ps1 nuget Newtonsoft.Json 13.0.1
+pwsh -ExecutionPolicy Bypass -File .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.ps1 nuget Newtonsoft.Json 13.0.1
 ```
 
 ## Output

@@ -38,6 +38,7 @@ print(json.dumps({
 }))
 " "$COMMENT")
 else
+  FILE_PATH="$(normalize_ado_file_path "$FILE_PATH")"
   LINE_NUM=${LINE:-1}
   if [[ "$LINE_NUM" -lt 1 ]]; then
     LINE_NUM=1

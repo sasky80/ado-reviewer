@@ -32,6 +32,11 @@ if [[ -z "$(printenv "$PAT_VAR" || true)" ]]; then
   exit 1
 fi
 
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "ERROR: python3 is required but not found on PATH" >&2
+  exit 1
+fi
+
 if [[ -n "$TESTED_FILE_PATH" || -n "$BRANCH_BASE" || -n "$BRANCH_TARGET" ]]; then
   echo "Validation context: file=${TESTED_FILE_PATH:-<unset>}, base=${BRANCH_BASE:-<unset>}, target=${BRANCH_TARGET:-<unset>}"
 else
@@ -104,18 +109,11 @@ else
   echo "SKIP (npm is not available)"
 fi
 
-if command -v python3 >/dev/null 2>&1; then
-  run_check "check-deprecated-dependencies (pip)" \
-    bash .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh pip requests 2.31.0
+run_check "check-deprecated-dependencies (pip)" \
+  bash .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh pip requests 2.31.0
 
-  run_check "check-deprecated-dependencies (nuget)" \
-    bash .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh nuget Newtonsoft.Json 13.0.3
-else
-  echo "--- check-deprecated-dependencies (pip) ---"
-  echo "SKIP (python3 is not available)"
-  echo "--- check-deprecated-dependencies (nuget) ---"
-  echo "SKIP (python3 is not available)"
-fi
+run_check "check-deprecated-dependencies (nuget)" \
+  bash .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh nuget Newtonsoft.Json 13.0.3
 
 if [[ -n "$TESTED_FILE_PATH" && -n "$BRANCH_BASE" && -n "$BRANCH_TARGET" ]]; then
   run_check "get-file-content" \
@@ -131,6 +129,9 @@ else
 fi
 
 if [[ "${ENABLE_MUTATING_CHECKS:-false}" == "true" ]]; then
+  run_check "post-pr-comment" \
+    bash .github/skills/post-pr-comment/post-pr-comment.sh "$ORG" "$PROJECT" "$REPO" "$PR" - 0 "[validate-skills] smoke test comment"
+
   run_check "approve-with-suggestions" \
     bash .github/skills/approve-with-suggestions/approve-with-suggestions.sh "$ORG" "$PROJECT" "$REPO" "$PR"
 
@@ -146,6 +147,8 @@ if [[ "${ENABLE_MUTATING_CHECKS:-false}" == "true" ]]; then
   run_check "accept-pr" \
     bash .github/skills/accept-pr/accept-pr.sh "$ORG" "$PROJECT" "$REPO" "$PR"
 else
+  echo "--- post-pr-comment ---"
+  echo "SKIP (mutating check disabled; set ENABLE_MUTATING_CHECKS=true to enable)"
   echo "--- approve-with-suggestions ---"
   echo "SKIP (mutating check disabled; set ENABLE_MUTATING_CHECKS=true to enable)"
   echo "--- wait-for-author ---"

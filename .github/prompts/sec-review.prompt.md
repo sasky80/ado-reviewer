@@ -85,7 +85,7 @@ Audit code and configuration for:
 - On **Windows**, run:
 
 ```powershell
-.github/skills/get-github-advisories/get-github-advisories.ps1 <ecosystem> <package> <version>
+pwsh -ExecutionPolicy Bypass -File .github/skills/get-github-advisories/get-github-advisories.ps1 <ecosystem> <package> <version>
 ```
 
 - On **macOS/Linux**, run:
@@ -103,7 +103,7 @@ bash .github/skills/get-github-advisories/get-github-advisories.sh <ecosystem> <
 - On **Windows**, run:
 
 ```powershell
-.github/skills/check-deprecated-dependencies/check-deprecated-dependencies.ps1 <ecosystem> <package> <version>
+pwsh -ExecutionPolicy Bypass -File .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.ps1 <ecosystem> <package> <version>
 ```
 
 - On **macOS/Linux**, run:

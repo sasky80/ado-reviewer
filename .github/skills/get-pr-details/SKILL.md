@@ -11,7 +11,7 @@ description: >
 ## Platform Note
 
 - macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts with the same argument order
+- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
 
 Run the [get-pr-details.sh](./get-pr-details.sh) script on macOS/Linux or [get-pr-details.ps1](./get-pr-details.ps1) on Windows to retrieve pull request metadata.
 
@@ -24,14 +24,14 @@ Run the [get-pr-details.sh](./get-pr-details.sh) script on macOS/Linux or [get-p
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
 
-## Example
+## Examples
 
 ```bash
 bash .github/skills/get-pr-details/get-pr-details.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
-.\github\skills\get-pr-details\get-pr-details.ps1 myorg MyProject MyRepo 42
+pwsh -ExecutionPolicy Bypass -File .\github\skills\get-pr-details\get-pr-details.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output

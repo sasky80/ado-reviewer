@@ -57,3 +57,43 @@ ado_init() {
   ADO_AUTH="$(build_auth "$ADO_PAT")"
   ORG_ENC="$(urlencode "$org")"
 }
+
+# Normalize a file path to Azure DevOps canonical repository-relative format.
+# - Converts backslashes to forward slashes
+# - Removes leading ./ segments
+# - Collapses duplicate slashes
+# - Ensures a leading /
+# Rejects local absolute paths (e.g. C:/..., //server/share)
+normalize_ado_file_path() {
+  local file_path="$1"
+
+  if [[ "$file_path" == "-" || -z "$file_path" ]]; then
+    printf '%s' "$file_path"
+    return 0
+  fi
+
+  local normalized="$file_path"
+
+  normalized="${normalized#"${normalized%%[![:space:]]*}"}"
+  normalized="${normalized%"${normalized##*[![:space:]]}"}"
+  normalized="${normalized//\\//}"
+
+  if [[ "$normalized" =~ ^[A-Za-z]:/ || "$normalized" =~ ^// ]]; then
+    echo "FilePath must be repository-relative (for example: /src/app.js). Received: '$file_path'" >&2
+    return 1
+  fi
+
+  while [[ "$normalized" == ./* ]]; do
+    normalized="${normalized#./}"
+  done
+
+  while [[ "$normalized" == *//* ]]; do
+    normalized="${normalized//\/\//\/}"
+  done
+
+  if [[ "$normalized" != /* ]]; then
+    normalized="/$normalized"
+  fi
+
+  printf '%s' "$normalized"
+}

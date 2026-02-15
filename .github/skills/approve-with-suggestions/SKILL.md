@@ -10,7 +10,7 @@ description: >
 ## Platform Note
 
 - macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts with the same argument order
+- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
 
 Run the [approve-with-suggestions.sh](./approve-with-suggestions.sh) script on macOS/Linux or [approve-with-suggestions.ps1](./approve-with-suggestions.ps1) on Windows to approve a pull request with suggestions.
 
@@ -23,14 +23,14 @@ Run the [approve-with-suggestions.sh](./approve-with-suggestions.sh) script on m
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
 
-## Example
+## Examples
 
 ```bash
 bash .github/skills/approve-with-suggestions/approve-with-suggestions.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
-.\github\skills\approve-with-suggestions\approve-with-suggestions.ps1 myorg MyProject MyRepo 42
+pwsh -ExecutionPolicy Bypass -File .\github\skills\approve-with-suggestions\approve-with-suggestions.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output

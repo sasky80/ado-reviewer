@@ -23,14 +23,14 @@ Run the [post-pr-comment.sh](./post-pr-comment.sh) script on macOS/Linux or [pos
 | 2 | project | Yes | Project name or ID |
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
-| 5 | filePath | Yes | File path for inline comment (use `-` for a general comment) |
+| 5 | filePath | Yes | Repository-relative file path for inline comment (canonical form like `/src/app.js`; use `-` for a general comment) |
 | 6 | line | Yes | Line number for inline comment (use `0` for general comments) |
 | 7 | comment | Yes | Comment text (supports Markdown) |
 
 ## Examples
 
 ```bash
-# Inline comment on a specific file and line
+# Inline comment on a specific file and line (canonical repository path)
 bash .github/skills/post-pr-comment/post-pr-comment.sh myorg MyProject MyRepo 42 /src/app.js 15 "Consider using const here."
 
 # General PR-level comment
@@ -38,7 +38,7 @@ bash .github/skills/post-pr-comment/post-pr-comment.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
-# Inline comment on a specific file and line (Windows)
+# Inline comment on a specific file and line (Windows, canonical repository path)
 .\github\skills\post-pr-comment\post-pr-comment.ps1 myorg MyProject MyRepo 42 /src/app.js 15 "Consider using const here."
 
 # General PR-level comment (Windows)

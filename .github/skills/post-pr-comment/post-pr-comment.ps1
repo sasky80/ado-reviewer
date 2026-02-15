@@ -20,12 +20,13 @@ if ($FilePath -eq '-' -or [string]::IsNullOrWhiteSpace($FilePath)) {
     }
 }
 else {
+    $canonicalFilePath = ConvertTo-AdoFilePath -FilePath $FilePath
     $lineNum = if ($Line -gt 0) { $Line } else { 1 }
     $body = @{
         comments = @(@{ parentCommentId = 0; content = $Comment; commentType = 'text' })
         status = 'active'
         threadContext = @{
-            filePath = $FilePath
+            filePath = $canonicalFilePath
             rightFileStart = @{ line = $lineNum; offset = 1 }
             rightFileEnd   = @{ line = $lineNum; offset = 1 }
         }

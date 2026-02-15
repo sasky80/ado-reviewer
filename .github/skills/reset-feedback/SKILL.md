@@ -10,7 +10,7 @@ description: >
 ## Platform Note
 
 - macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts with the same argument order
+- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
 
 Run the [reset-feedback.sh](./reset-feedback.sh) script on macOS/Linux or [reset-feedback.ps1](./reset-feedback.ps1) on Windows to clear reviewer vote feedback.
 
@@ -23,14 +23,14 @@ Run the [reset-feedback.sh](./reset-feedback.sh) script on macOS/Linux or [reset
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
 
-## Example
+## Examples
 
 ```bash
 bash .github/skills/reset-feedback/reset-feedback.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
-.\github\skills\reset-feedback\reset-feedback.ps1 myorg MyProject MyRepo 42
+pwsh -ExecutionPolicy Bypass -File .\github\skills\reset-feedback\reset-feedback.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output

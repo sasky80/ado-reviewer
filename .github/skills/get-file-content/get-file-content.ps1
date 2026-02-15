@@ -10,7 +10,8 @@ param(
 . (Join-Path $PSScriptRoot '..\common\AdoSkillUtils.ps1')
 
 $ctx = New-AdoContext -Organization $Organization -Project $Project -RepositoryId $RepositoryId
-$pathEncoded = UrlEncode -Value $Path
+$canonicalPath = ConvertTo-AdoFilePath -FilePath $Path
+$pathEncoded = UrlEncode -Value $canonicalPath
 $url = "https://dev.azure.com/$($ctx.OrganizationEncoded)/$($ctx.ProjectEncoded)/_apis/git/repositories/$($ctx.RepositoryEncoded)/items?path=$pathEncoded&includeContent=true&api-version=7.2-preview"
 
 if (-not [string]::IsNullOrWhiteSpace($Version)) {

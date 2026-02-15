@@ -11,7 +11,7 @@ description: >
 ## Platform Note
 
 - macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts with the same argument order
+- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
 
 Run the [get-commit-diffs.sh](./get-commit-diffs.sh) script on macOS/Linux or [get-commit-diffs.ps1](./get-commit-diffs.ps1) on Windows to get a diff summary.
 
@@ -27,7 +27,7 @@ Run the [get-commit-diffs.sh](./get-commit-diffs.sh) script on macOS/Linux or [g
 | 6 | baseVersionType | No | Base version type: `branch`, `commit`, or `tag` (default: `commit`) |
 | 7 | targetVersionType | No | Target version type: `branch`, `commit`, or `tag` (default: `commit`) |
 
-## Example
+## Examples
 
 ```bash
 # Compare two branches
@@ -36,7 +36,7 @@ bash .github/skills/get-commit-diffs/get-commit-diffs.sh myorg MyProject MyRepo 
 
 ```powershell
 # Compare two branches (Windows)
-.\github\skills\get-commit-diffs\get-commit-diffs.ps1 myorg MyProject MyRepo main feature/login branch branch
+pwsh -ExecutionPolicy Bypass -File .\github\skills\get-commit-diffs\get-commit-diffs.ps1 myorg MyProject MyRepo main feature/login branch branch
 ```
 
 ## Output

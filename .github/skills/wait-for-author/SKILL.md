@@ -10,7 +10,7 @@ description: >
 ## Platform Note
 
 - macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts with the same argument order
+- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
 
 Run the [wait-for-author.sh](./wait-for-author.sh) script on macOS/Linux or [wait-for-author.ps1](./wait-for-author.ps1) on Windows to set the reviewer vote to waiting for author.
 
@@ -23,14 +23,14 @@ Run the [wait-for-author.sh](./wait-for-author.sh) script on macOS/Linux or [wai
 | 3 | repositoryId | Yes | Repository name or ID |
 | 4 | pullRequestId | Yes | Pull request ID |
 
-## Example
+## Examples
 
 ```bash
 bash .github/skills/wait-for-author/wait-for-author.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
-.\github\skills\wait-for-author\wait-for-author.ps1 myorg MyProject MyRepo 42
+pwsh -ExecutionPolicy Bypass -File .\github\skills\wait-for-author\wait-for-author.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output

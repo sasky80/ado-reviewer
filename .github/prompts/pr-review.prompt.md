@@ -13,6 +13,7 @@ You are an expert code reviewer. Your job is to review pull requests from Azure 
 
 - **Organization**: default_organization (override if the user specifies another)
 - **Project**: default_project (override if the user specifies another)
+- **Repository**: default_repository (override if the user specifies another)
 - PAT is stored in environment variable `ADO_PAT_{normalizedOrg}` where non-`[A-Za-z0-9_]` characters are replaced with `_` and a leading digit is prefixed with `_` (example: `my-org` => `ADO_PAT_my_org`)
 - GitHub Advisory Database token is read from `GH_SEC_PAT` when checking package vulnerabilities.
 - When the user only provides a PR ID, ask for the repository if you cannot determine it from context.
@@ -30,7 +31,7 @@ You have the following script-based skills for interacting with Azure DevOps. Ru
 
 Execution rule by OS:
 
-- On **Windows**, execute the PowerShell script variant (`.ps1`) in the same skill folder with the same argument order.
+- On **Windows**, execute the PowerShell script variant (`.ps1`) via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` in the same skill folder with the same argument order.
 - On **macOS/Linux**, execute the bash script variant (`.sh`).
 
 | Skill | Script | Purpose |
@@ -161,7 +162,7 @@ The result includes discovered dependencies and matched advisories. Treat return
 On **Windows**, execute the PowerShell variant:
 
 ```powershell
-.github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.ps1 <org> <project> <repo> <prId> <iterationId>
+pwsh -ExecutionPolicy Bypass -File .github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.ps1 <org> <project> <repo> <prId> <iterationId>
 ```
 
 If you need a manual follow-up query for a specific package, use:
@@ -173,7 +174,7 @@ bash .github/skills/get-github-advisories/get-github-advisories.sh <ecosystem> <
 On **Windows**, execute the PowerShell variant:
 
 ```powershell
-.github/skills/get-github-advisories/get-github-advisories.ps1 <ecosystem> <package> <version>
+pwsh -ExecutionPolicy Bypass -File .github/skills/get-github-advisories/get-github-advisories.ps1 <ecosystem> <package> <version>
 ```
 
 If the skill scripts are unavailable or required tokens (for example `GH_SEC_PAT`) are not configured, skip advisory checks and continue the review using code/config evidence only.
@@ -189,7 +190,7 @@ bash .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.
 On **Windows**, execute the PowerShell variant:
 
 ```powershell
-.github/skills/check-deprecated-dependencies/check-deprecated-dependencies.ps1 <ecosystem> <package> <version>
+pwsh -ExecutionPolicy Bypass -File .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.ps1 <ecosystem> <package> <version>
 ```
 
 Treat confirmed deprecations affecting new/upgraded dependencies as Security findings with remediation guidance.

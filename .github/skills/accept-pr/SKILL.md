@@ -11,7 +11,7 @@ description: >
 ## Platform Note
 
 - macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts with the same argument order
+- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
 
 Run the [accept-pr.sh](./accept-pr.sh) script on macOS/Linux or [accept-pr.ps1](./accept-pr.ps1) on Windows to approve a pull request.
 
@@ -33,7 +33,7 @@ bash .github/skills/accept-pr/accept-pr.sh myorg MyProject MyRepo 42
 
 ```powershell
 # Approve PR 42 (Windows)
-.\github\skills\accept-pr\accept-pr.ps1 myorg MyProject MyRepo 42
+pwsh -ExecutionPolicy Bypass -File .\github\skills\accept-pr\accept-pr.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output

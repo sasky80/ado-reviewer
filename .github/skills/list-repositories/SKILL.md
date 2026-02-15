@@ -10,7 +10,7 @@ description: >
 ## Platform Note
 
 - macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts with the same argument order
+- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
 
 Run the [list-repositories.sh](./list-repositories.sh) script on macOS/Linux or [list-repositories.ps1](./list-repositories.ps1) on Windows to list repositories.
 
@@ -21,14 +21,14 @@ Run the [list-repositories.sh](./list-repositories.sh) script on macOS/Linux or 
 | 1 | organization | Yes | Azure DevOps organization |
 | 2 | project | Yes | Project name or ID |
 
-## Example
+## Examples
 
 ```bash
 bash .github/skills/list-repositories/list-repositories.sh myorg MyProject
 ```
 
 ```powershell
-.\github\skills\list-repositories\list-repositories.ps1 myorg MyProject
+pwsh -ExecutionPolicy Bypass -File .\github\skills\list-repositories\list-repositories.ps1 myorg MyProject
 ```
 
 ## Output
