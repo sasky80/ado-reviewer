@@ -36,4 +36,4 @@ bash .github/skills/wait-for-author/wait-for-author.sh myorg MyProject MyRepo 42
 ## Output
 
 Returns JSON with the reviewer vote object.
-A `vote` value of `-5` means **Waiting for author**.
+A `vote` value of `-5` means **Waiting for Author**.

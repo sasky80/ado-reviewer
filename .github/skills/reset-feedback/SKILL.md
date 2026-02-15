@@ -36,4 +36,4 @@ bash .github/skills/reset-feedback/reset-feedback.sh myorg MyProject MyRepo 42
 ## Output
 
 Returns JSON with the reviewer vote object.
-A `vote` value of `0` means **No vote** (feedback reset).
+A `vote` value of `0` means **No Vote** (feedback reset).

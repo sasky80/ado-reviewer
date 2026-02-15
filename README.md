@@ -4,6 +4,8 @@ Copilot prompts (`/pr-review` and `/sec-review`) + cross-platform skills (Bash/P
 for Azure DevOps pull request workflows, including review voting, thread actions,
 and dependency security advisory checks.
 
+For teams using GitHub Copilot Chat to review Azure DevOps pull requests from macOS/Linux or Windows.
+
 The setup uses:
 
 - Prompt files: [.github/prompts/pr-review.prompt.md](.github/prompts/pr-review.prompt.md), [.github/prompts/sec-review.prompt.md](.github/prompts/sec-review.prompt.md)
@@ -46,12 +48,28 @@ export GH_SEC_PAT="<your_github_pat>"
 bash .github/skills/get-pr-details/get-pr-details.sh "$ORG" "$PROJECT" "$REPO" "$PR"
 ```
 
+Windows PowerShell quick start:
+
+```powershell
+$Org = "<your_org>"
+$Project = "<your_project>"
+$Repo = "<your_repo>"
+$Pr = "<your_pr_id>"
+
+# Example: my-org -> ADO_PAT_my_org
+$env:ADO_PAT_my_org = "<your_pat>"
+# Optional but recommended for dependency vulnerability checks:
+$env:GH_SEC_PAT = "<your_github_pat>"
+
+.\github\skills\get-pr-details\get-pr-details.ps1 $Org $Project $Repo $Pr
+```
+
 Use this for a fast smoke test. For full setup (including validation and command examples),
 follow [Setup Instructions](#setup-instructions).
 
 ## Prompt Commands
 
-Use these slash prompts in Copilot chat:
+Use these slash prompts in GitHub Copilot Chat:
 
 ```text
 /pr-review review pr 1
@@ -119,7 +137,7 @@ Get-Command Invoke-RestMethod
 
    Advanced options and reusable wrappers are in [Validation (Optional)](#validation-optional).
 
-5. Start reviewing — open the Copilot chat and use the reviewer prompt command:
+5. Start reviewing — open GitHub Copilot Chat and use the reviewer prompt command:
 
     ```text
     /pr-review review pr 1
@@ -136,7 +154,7 @@ Get-Command Invoke-RestMethod
 
 ## Prompt Examples (Voting)
 
-Use these prompt examples in Copilot chat:
+Use these prompt examples in GitHub Copilot Chat:
 
 ```text
 /pr-review approve pr 1
@@ -160,25 +178,13 @@ Explicit org/project/repo form:
 
 ## Security Audit Prompt
 
-Use this prompt in Copilot chat to run a security-focused audit of the current workspace:
+Use this prompt in GitHub Copilot Chat to run a security-focused audit of the current workspace:
 
 ```text
 /sec-review
 ```
 
-Optional scoped forms:
-
-```text
-/sec-review <path-or-folder>
-/sec-review focus on <area>
-```
-
-Examples:
-
-```text
-/sec-review src/
-/sec-review focus on auth
-```
+For scoped forms and examples, see [Prompt Commands](#prompt-commands).
 
 ## Environment Variables (OS-specific)
 
@@ -321,23 +327,23 @@ Most skills call Azure DevOps REST API (`api-version=7.2-preview`).
 
 | Skill | Script | Description |
 |---|---|---|
-| `get-pr-details` | `.github/skills/get-pr-details/get-pr-details.sh` | Fetches PR metadata: title, status, source/target branches, reviewers, merge data. |
-| `get-pr-threads` | `.github/skills/get-pr-threads/get-pr-threads.sh` | Fetches PR discussion/comment threads, including inline comments and system messages. |
+| `get-pr-details` | `.github/skills/get-pr-details/get-pr-details.sh` | Gets PR metadata (title, status, branches, reviewers, merge info). |
+| `get-pr-threads` | `.github/skills/get-pr-threads/get-pr-threads.sh` | Gets PR comment threads, including inline and system comments. |
 | `get-pr-iterations` | `.github/skills/get-pr-iterations/get-pr-iterations.sh` | Lists PR iterations (push updates). |
-| `get-pr-changes` | `.github/skills/get-pr-changes/get-pr-changes.sh` | Lists changed files for a specific PR iteration. |
-| `get-file-content` | `.github/skills/get-file-content/get-file-content.sh` | Gets file content for a specific path and version (branch/commit/tag). |
-| `get-commit-diffs` | `.github/skills/get-commit-diffs/get-commit-diffs.sh` | Returns diff summary between two versions. |
+| `get-pr-changes` | `.github/skills/get-pr-changes/get-pr-changes.sh` | Lists changed files for a PR iteration. |
+| `get-file-content` | `.github/skills/get-file-content/get-file-content.sh` | Gets file content at a path/version (branch/commit/tag). |
+| `get-commit-diffs` | `.github/skills/get-commit-diffs/get-commit-diffs.sh` | Gets a diff summary between two versions. |
 | `list-repositories` | `.github/skills/list-repositories/list-repositories.sh` | Lists repositories in a project. |
 | `list-projects` | `.github/skills/list-projects/list-projects.sh` | Lists projects in an organization. |
-| `get-github-advisories` | `.github/skills/get-github-advisories/get-github-advisories.sh` | Queries GitHub Advisory Database for vulnerabilities affecting `package` or `package@version` within an ecosystem. |
-| `get-pr-dependency-advisories` | `.github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.sh` | Scans changed dependency manifests in a PR and queries GitHub advisories automatically. |
-| `post-pr-comment` | `.github/skills/post-pr-comment/post-pr-comment.sh` | Posts a comment thread on a PR (inline or general). |
-| `update-pr-thread` | `.github/skills/update-pr-thread/update-pr-thread.sh` | Replies to a comment thread and/or updates its status (fixed, closed, etc.). |
-| `accept-pr` | `.github/skills/accept-pr/accept-pr.sh` | Approves (accepts) a pull request by casting an Approve vote. |
-| `approve-with-suggestions` | `.github/skills/approve-with-suggestions/approve-with-suggestions.sh` | Casts an Approve with suggestions vote on a pull request. |
-| `wait-for-author` | `.github/skills/wait-for-author/wait-for-author.sh` | Casts a Waiting for author vote on a pull request. |
+| `get-github-advisories` | `.github/skills/get-github-advisories/get-github-advisories.sh` | Queries GitHub advisories for `package` or `package@version` in an ecosystem. |
+| `get-pr-dependency-advisories` | `.github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.sh` | Scans changed dependency manifests and queries GitHub advisories. |
+| `post-pr-comment` | `.github/skills/post-pr-comment/post-pr-comment.sh` | Posts an inline or general PR comment thread. |
+| `update-pr-thread` | `.github/skills/update-pr-thread/update-pr-thread.sh` | Replies to a comment thread and/or updates its status. |
+| `accept-pr` | `.github/skills/accept-pr/accept-pr.sh` | Casts an Approve vote on a pull request. |
+| `approve-with-suggestions` | `.github/skills/approve-with-suggestions/approve-with-suggestions.sh` | Casts an Approve with Suggestions vote on a pull request. |
+| `wait-for-author` | `.github/skills/wait-for-author/wait-for-author.sh` | Casts a Waiting for Author vote on a pull request. |
 | `reject-pr` | `.github/skills/reject-pr/reject-pr.sh` | Casts a Rejected vote on a pull request. |
-| `reset-feedback` | `.github/skills/reset-feedback/reset-feedback.sh` | Resets reviewer vote to No vote on a pull request. |
+| `reset-feedback` | `.github/skills/reset-feedback/reset-feedback.sh` | Resets reviewer vote to No Vote. |
 | `check-deprecated-dependencies` | `.github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh` | Checks whether a dependency is deprecated across ecosystems (npm, pip, nuget). |
 
 ## Before First Review

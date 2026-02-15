@@ -36,4 +36,4 @@ bash .github/skills/approve-with-suggestions/approve-with-suggestions.sh myorg M
 ## Output
 
 Returns JSON with the reviewer vote object.
-A `vote` value of `5` means **Approved with suggestions**.
+A `vote` value of `5` means **Approved with Suggestions**.
