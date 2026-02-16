@@ -10,11 +10,13 @@ The setup uses:
 
 - Prompt files: [.github/prompts/pr-review.prompt.md](.github/prompts/pr-review.prompt.md), [.github/prompts/sec-review.prompt.md](.github/prompts/sec-review.prompt.md)
 - Skills: [.github/skills/](.github/skills/)
+- Windows helper: [`scripts/invoke-skill.ps1`](scripts/invoke-skill.ps1) for safe PowerShell skill invocation
 - Validation scripts: [scripts/validate-skills.sh](scripts/validate-skills.sh), [scripts/validate-skills.ps1](scripts/validate-skills.ps1)
 
 ## Contents
 
 - [Quick Start](#quick-start)
+- [Windows-safe Invocation](#windows-safe-invocation)
 - [Prompt Commands](#prompt-commands)
 - [Requirements](#requirements)
 - [Setup Instructions](#setup-instructions)
@@ -66,6 +68,30 @@ pwsh -ExecutionPolicy Bypass -File .\github\skills\get-pr-details\get-pr-details
 
 Use this for a fast smoke test. For full setup (including validation and command examples),
 follow [Setup Instructions](#setup-instructions).
+
+## Windows-safe Invocation
+
+For multi-step PowerShell workflows, prefer the helper script to avoid quoting/parser issues in long
+`pwsh -Command "..."` one-liners.
+
+PR workflow example (active non-system thread count):
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\invoke-skill.ps1 \
+  -SkillPath .github/skills/get-pr-threads/get-pr-threads.ps1 \
+  -SkillArgs @('myorg','myproject','myrepo','1','active','true') \
+  -Select count
+```
+
+Security workflow example (dependency advisory lookup):
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\invoke-skill.ps1 \
+  -SkillPath .github/skills/get-github-advisories/get-github-advisories.ps1 \
+  -SkillArgs @('npm','lodash','4.17.20')
+```
+
+Use direct `-File` skill calls for single commands; use `invoke-skill.ps1` when arguments/JSON parsing become complex.
 
 ## Prompt Commands
 
@@ -337,11 +363,12 @@ Most skills call Azure DevOps REST API (`api-version=7.2-preview`).
 - Windows: use `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` (same folder, same argument order)
 
 | Skill | Script | Description |
-|---|---|---|
+| --- | --- | --- |
 | `get-pr-details` | `.github/skills/get-pr-details/get-pr-details.sh` | Gets PR metadata (title, status, branches, reviewers, merge info). |
 | `get-pr-threads` | `.github/skills/get-pr-threads/get-pr-threads.sh` | Gets PR comment threads, including inline and system comments. |
 | `get-pr-iterations` | `.github/skills/get-pr-iterations/get-pr-iterations.sh` | Lists PR iterations (push updates). |
 | `get-pr-changes` | `.github/skills/get-pr-changes/get-pr-changes.sh` | Lists changed files for a PR iteration. |
+| `get-pr-changed-files` | `.github/skills/get-pr-changed-files/get-pr-changed-files.sh` | Returns projected changed files (`path`, `changeType`, `changeTrackingId`, `isFolder`). |
 | `get-file-content` | `.github/skills/get-file-content/get-file-content.sh` | Gets file content at a path/version (branch/commit/tag). |
 | `get-commit-diffs` | `.github/skills/get-commit-diffs/get-commit-diffs.sh` | Gets a diff summary between two versions. |
 | `list-repositories` | `.github/skills/list-repositories/list-repositories.sh` | Lists repositories in a project. |
@@ -382,8 +409,8 @@ repository-specific standards paths so they apply by default.
 1. `get-pr-details` to identify source and target branches.
 2. Resolve standards/guides locations (user-provided or default paths).
 3. `get-pr-iterations` to find the latest iteration.
-4. `get-pr-changes` to list modified files.
-5. `get-file-content` to compare file versions (target branch and source branch).
+4. `get-pr-changed-files` (or `get-pr-changes`) to list modified files.
+5. `get-file-content` / `get-multiple-files` to compare file versions (target branch and source branch).
 6. `get-pr-threads` to avoid duplicate comments.
 7. Optional: `get-commit-diffs` for a high-level diff summary.
 8. Optional (dependency changes): `get-pr-dependency-advisories` to automatically scan changed manifests and query advisories.
@@ -414,6 +441,26 @@ Windows/PowerShell equivalent:
 pwsh -ExecutionPolicy Bypass -File .\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
 ```
 
+Enable optional NuGet regression coverage during PowerShell validation:
+
+```powershell
+pwsh -ExecutionPolicy Bypass -File .\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>" -IncludeNugetRegression
+```
+
+Validation includes a non-mutating URL-encoding lint guard:
+
+- `scripts/check-url-encoding.sh`
+- `scripts/check-url-encoding.ps1`
+
+Validation runs URL-encoding lint in strict mode by default (findings fail validation).
+You can still run lint directly without strict mode for exploratory checks.
+
+Allowlist policy for intentional raw interpolation:
+
+- Add `lint:allow-unencoded-url` on the specific URL line only.
+- Include a short justification in an adjacent comment (why encoding is intentionally skipped).
+- Do not use file-wide/global suppression.
+
 Reusable wrappers:
 
 - Generic template for local customization:
@@ -431,6 +478,18 @@ Reusable wrappers:
   # edit scripts\validate-skill-local.ps1 with your values, then:
   pwsh -ExecutionPolicy Bypass -File .\scripts\validate-skill-local.ps1
   ```
+
+NuGet deprecation regression check (PowerShell):
+
+```powershell
+pwsh -ExecutionPolicy Bypass -File .\scripts\regression-check-deprecated-nuget.ps1
+```
+
+Custom package/version:
+
+```powershell
+pwsh -ExecutionPolicy Bypass -File .\scripts\regression-check-deprecated-nuget.ps1 -Package Newtonsoft.Json -Version 13.0.3
+```
 
 Optional repository-specific validation inputs:
 
@@ -481,7 +540,7 @@ Use these sources for the variables used in examples (`ORG`, `PROJECT`, `REPO`, 
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
-|---|---|---|
+| --- | --- | --- |
 | `401 Unauthorized` | PAT is missing, expired, or wrong org name in env var | Verify `ADO_PAT_<normalized_org>` is set using the normalization rule above and that the PAT is valid (example: `123-org` => `ADO_PAT__123_org`) |
 | `command not found: python3` | Python 3 not installed or not on PATH | Install Python 3 and ensure `python3` is available |
 | `base64: invalid option` | GNU vs BSD flag mismatch | Scripts already handle this — ensure you're using the repo version |

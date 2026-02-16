@@ -37,6 +37,28 @@ If no path is provided, review the whole repository.
 
 ## Audit Workflow
 
+### Windows command-construction guardrails
+
+- On Windows, prefer `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` for skill execution.
+- Avoid long `pwsh -Command "..."` one-liners for multi-step orchestration.
+- If `-Command` is required, wrap the script block in single quotes so `$` variables (for example `$_`) are not expanded prematurely.
+- For complex parameter passing, prefer splatting:
+
+```powershell
+$script = Join-Path (Get-Location) '.github/skills/get-github-advisories/get-github-advisories.ps1'
+$params = @{ Ecosystem='npm'; Package='lodash'; Version='4.17.20' }
+$raw = & $script @params
+$obj = $raw | ConvertFrom-Json
+```
+
+- Prefer the helper wrapper for repeatable Windows calls:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\invoke-skill.ps1 \
+	-SkillPath .github/skills/get-github-advisories/get-github-advisories.ps1 \
+	-SkillArgs @('npm','lodash','4.17.20')
+```
+
 ### 1) Establish scope and context
 
 - Determine review scope from user prompt (`file`, `folder`, or full repo).

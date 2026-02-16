@@ -6,7 +6,8 @@ param(
     [Parameter(Mandatory = $true)][string]$Iteration,
     [string]$TestedFilePath = $env:TESTED_FILE_PATH,
     [string]$BranchBase = $env:BRANCH_BASE,
-    [string]$BranchTarget = $env:BRANCH_TARGET
+    [string]$BranchTarget = $env:BRANCH_TARGET,
+    [switch]$IncludeNugetRegression
 )
 
 Set-StrictMode -Version Latest
@@ -51,12 +52,14 @@ function Test-SkillCheck {
     param(
         [Parameter(Mandatory = $true)][string]$Name,
         [Parameter(Mandatory = $true)][string]$ScriptPath,
-        [Parameter(Mandatory = $true)][string[]]$SkillArgs
+        [string[]]$SkillArgs = @()
     )
 
     Write-Output "--- $Name ---"
     $output = & $ScriptPath @SkillArgs 2>&1 | Out-String
-    if ($LASTEXITCODE -ne 0) {
+    $exitCodeVar = Get-Variable -Name LASTEXITCODE -ErrorAction SilentlyContinue
+    $exitCode = if ($null -ne $exitCodeVar) { [int]$exitCodeVar.Value } else { 0 }
+    if ($exitCode -ne 0) {
         Write-Output 'FAIL (command error)'
         $output.Trim().Split([Environment]::NewLine) | Select-Object -First 8 | ForEach-Object { Write-Output $_ }
         $script:failCount++
@@ -82,7 +85,22 @@ Test-SkillCheck -Name 'list-repositories' -ScriptPath (Join-Path $skillsRoot 'li
 Test-SkillCheck -Name 'get-pr-details' -ScriptPath (Join-Path $skillsRoot 'get-pr-details\get-pr-details.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr)
 Test-SkillCheck -Name 'get-pr-iterations' -ScriptPath (Join-Path $skillsRoot 'get-pr-iterations\get-pr-iterations.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr)
 Test-SkillCheck -Name 'get-pr-changes' -ScriptPath (Join-Path $skillsRoot 'get-pr-changes\get-pr-changes.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr, $Iteration)
+Test-SkillCheck -Name 'get-pr-changed-files' -ScriptPath (Join-Path $skillsRoot 'get-pr-changed-files\get-pr-changed-files.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr, $Iteration)
 Test-SkillCheck -Name 'get-pr-threads' -ScriptPath (Join-Path $skillsRoot 'get-pr-threads\get-pr-threads.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr)
+Test-SkillCheck -Name 'get-pr-threads (filtered)' -ScriptPath (Join-Path $skillsRoot 'get-pr-threads\get-pr-threads.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr, 'active', 'true')
+$previousStrictSetting = $env:URL_ENCODING_LINT_STRICT
+$env:URL_ENCODING_LINT_STRICT = 'true'
+try {
+    Test-SkillCheck -Name 'check-url-encoding' -ScriptPath (Join-Path $PSScriptRoot 'check-url-encoding.ps1') -SkillArgs @()
+}
+finally {
+    if ($null -eq $previousStrictSetting) {
+        Remove-Item Env:URL_ENCODING_LINT_STRICT -ErrorAction SilentlyContinue
+    }
+    else {
+        $env:URL_ENCODING_LINT_STRICT = $previousStrictSetting
+    }
+}
 
 $ghToken = [Environment]::GetEnvironmentVariable('GH_SEC_PAT', 'Process')
 if ([string]::IsNullOrWhiteSpace($ghToken)) { $ghToken = [Environment]::GetEnvironmentVariable('GH_SEC_PAT', 'User') }
@@ -111,10 +129,13 @@ Test-SkillCheck -Name 'check-deprecated-dependencies (nuget)' -ScriptPath (Join-
 
 if (-not [string]::IsNullOrWhiteSpace($TestedFilePath) -and -not [string]::IsNullOrWhiteSpace($BranchBase) -and -not [string]::IsNullOrWhiteSpace($BranchTarget)) {
     Test-SkillCheck -Name 'get-file-content' -ScriptPath (Join-Path $skillsRoot 'get-file-content\get-file-content.ps1') -SkillArgs @($Org, $Project, $Repo, $TestedFilePath, $BranchTarget, 'branch')
+    Test-SkillCheck -Name 'get-multiple-files' -ScriptPath (Join-Path $skillsRoot 'get-multiple-files\get-multiple-files.ps1') -SkillArgs @($Org, $Project, $Repo, $BranchTarget, 'branch', "[`"$TestedFilePath`"]")
     Test-SkillCheck -Name 'get-commit-diffs' -ScriptPath (Join-Path $skillsRoot 'get-commit-diffs\get-commit-diffs.ps1') -SkillArgs @($Org, $Project, $Repo, $BranchBase, $BranchTarget, 'branch', 'branch')
 }
 else {
     Write-Output '--- get-file-content ---'
+    Write-Output 'SKIP (repository-specific inputs missing; provide tested_file_path + branch_base + branch_target)'
+    Write-Output '--- get-multiple-files ---'
     Write-Output 'SKIP (repository-specific inputs missing; provide tested_file_path + branch_base + branch_target)'
     Write-Output '--- get-commit-diffs ---'
     Write-Output 'SKIP (repository-specific inputs missing; provide branch_base + branch_target)'
@@ -177,6 +198,14 @@ if (-not [string]::IsNullOrWhiteSpace($threadId)) {
 else {
     Write-Output '--- update-pr-thread ---'
     Write-Output 'SKIP (no comment threads found to test against)'
+}
+
+if ($IncludeNugetRegression.IsPresent) {
+    Test-SkillCheck -Name 'nuget-regression' -ScriptPath (Join-Path $PSScriptRoot 'regression-check-deprecated-nuget.ps1') -SkillArgs @()
+}
+else {
+    Write-Output '--- nuget-regression ---'
+    Write-Output 'SKIP (optional; pass -IncludeNugetRegression to enable)'
 }
 
 Write-Output ''

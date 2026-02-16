@@ -85,8 +85,17 @@ run_check "get-pr-iterations" \
 run_check "get-pr-changes" \
   bash .github/skills/get-pr-changes/get-pr-changes.sh "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION"
 
+run_check "get-pr-changed-files" \
+  bash .github/skills/get-pr-changed-files/get-pr-changed-files.sh "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION"
+
 run_check "get-pr-threads" \
   bash .github/skills/get-pr-threads/get-pr-threads.sh "$ORG" "$PROJECT" "$REPO" "$PR"
+
+run_check "get-pr-threads (filtered)" \
+  bash .github/skills/get-pr-threads/get-pr-threads.sh "$ORG" "$PROJECT" "$REPO" "$PR" active true
+
+run_check "check-url-encoding" \
+  bash scripts/check-url-encoding.sh --strict
 
 if [[ -n "${GH_SEC_PAT:-}" ]]; then
   run_check "get-github-advisories" \
@@ -119,10 +128,15 @@ if [[ -n "$TESTED_FILE_PATH" && -n "$BRANCH_BASE" && -n "$BRANCH_TARGET" ]]; the
   run_check "get-file-content" \
     bash .github/skills/get-file-content/get-file-content.sh "$ORG" "$PROJECT" "$REPO" "$TESTED_FILE_PATH" "$BRANCH_TARGET" branch
 
+  run_check "get-multiple-files" \
+    bash .github/skills/get-multiple-files/get-multiple-files.sh "$ORG" "$PROJECT" "$REPO" "$BRANCH_TARGET" branch "[\"$TESTED_FILE_PATH\"]"
+
   run_check "get-commit-diffs" \
     bash .github/skills/get-commit-diffs/get-commit-diffs.sh "$ORG" "$PROJECT" "$REPO" "$BRANCH_BASE" "$BRANCH_TARGET" branch branch
 else
   echo "--- get-file-content ---"
+  echo "SKIP (repository-specific inputs missing; provide tested_file_path + branch_base + branch_target)"
+  echo "--- get-multiple-files ---"
   echo "SKIP (repository-specific inputs missing; provide tested_file_path + branch_base + branch_target)"
   echo "--- get-commit-diffs ---"
   echo "SKIP (repository-specific inputs missing; provide branch_base + branch_target)"

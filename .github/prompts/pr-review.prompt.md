@@ -34,13 +34,45 @@ Execution rule by OS:
 - On **Windows**, execute the PowerShell script variant (`.ps1`) via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` in the same skill folder with the same argument order.
 - On **macOS/Linux**, execute the bash script variant (`.sh`).
 
+Windows command-construction guardrails:
+
+- Prefer `-File` invocation for skill scripts. Do **not** wrap skill calls in long `pwsh -Command "..."` one-liners unless necessary.
+- If `-Command` is required for multi-step orchestration, wrap the script block in **single quotes** so `$` variables (for example `$_`) are not expanded prematurely.
+- For complex parameter passing, prefer splatting:
+
+```powershell
+$script = Join-Path (Get-Location) '.github/skills/get-pr-threads/get-pr-threads.ps1'
+$params = @{ Organization='myorg'; Project='myproject'; RepositoryId='myrepo'; PullRequestId=1; StatusFilter='active'; ExcludeSystem='true' }
+$raw = & $script @params
+$obj = $raw | ConvertFrom-Json
+```
+
+- Avoid patterns that place `$_` inside a double-quoted `-Command` string, because this can cause parsing failures such as: `Missing expression after unary operator '-not'`.
+
+- Prefer the helper wrapper for repeatable Windows calls:
+
+```powershell
+# Generic invocation (recommended)
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\invoke-skill.ps1 \
+	-SkillPath .github/skills/get-pr-threads/get-pr-threads.ps1 \
+	-SkillArgs @('myorg','myproject','myrepo','1','active','true') \
+	-Select count
+
+# Trailing-args mode (using stop-parsing token)
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\invoke-skill.ps1 \
+	-SkillPath .github/skills/get-pr-details/get-pr-details.ps1 \
+	-Select status --% myorg myproject myrepo 1
+```
+
 | Skill | Script | Purpose |
 |-------|--------|---------|
 | `get-pr-details` | `.github/skills/get-pr-details/get-pr-details.sh` | PR metadata (title, branches, reviewers, status) |
 | `get-pr-threads` | `.github/skills/get-pr-threads/get-pr-threads.sh` | Comment threads on a PR |
 | `get-pr-iterations` | `.github/skills/get-pr-iterations/get-pr-iterations.sh` | Push iterations of a PR |
 | `get-pr-changes` | `.github/skills/get-pr-changes/get-pr-changes.sh` | Files changed in a PR iteration |
+| `get-pr-changed-files` | `.github/skills/get-pr-changed-files/get-pr-changed-files.sh` | Projected changed-file list (path/changeType) for efficient fetch planning |
 | `get-file-content` | `.github/skills/get-file-content/get-file-content.sh` | File content at a given version |
+| `get-multiple-files` | `.github/skills/get-multiple-files/get-multiple-files.sh` | Batch-fetch multiple files at a given version |
 | `get-commit-diffs` | `.github/skills/get-commit-diffs/get-commit-diffs.sh` | Diff summary between versions |
 | `list-repositories` | `.github/skills/list-repositories/list-repositories.sh` | List repos in a project |
 | `list-projects` | `.github/skills/list-projects/list-projects.sh` | List projects in the org |
@@ -106,6 +138,12 @@ Then use the **latest** iteration ID:
 bash .github/skills/get-pr-changes/get-pr-changes.sh <org> <project> <repo> <prId> <iterationId>
 ```
 
+For a compact projection (recommended as default input for downstream file fetches):
+
+```bash
+bash .github/skills/get-pr-changed-files/get-pr-changed-files.sh <org> <project> <repo> <prId> <iterationId>
+```
+
 ### 3. Search for repository coding standards and best practices only when asked by the user
 
 Before reviewing code, look for coding standards, conventions, and best-practice documents defined in the repository. Fetch the following well-known files from the **target branch** (if they exist):
@@ -131,7 +169,17 @@ Use any discovered standards and rules as **additional review criteria** alongsi
 
 ### 4. Retrieve file contents
 
-For every changed file, fetch both versions:
+Use projected file paths from `get-pr-changed-files` (or `get-pr-changes`) and fetch both versions. **Prefer `get-multiple-files`** when retrieving more than one file at the same version to reduce round-trips:
+
+```bash
+# Batch: fetch all changed files from target branch (base / "before")
+bash .github/skills/get-multiple-files/get-multiple-files.sh <org> <project> <repo> <targetBranch> branch '<json_array_of_paths>'
+
+# Batch: fetch all changed files from source branch (PR / "after")
+bash .github/skills/get-multiple-files/get-multiple-files.sh <org> <project> <repo> <sourceBranch> branch '<json_array_of_paths>'
+```
+
+Fallback for a single file:
 
 ```bash
 # Target branch (base / "before")
@@ -142,6 +190,12 @@ bash .github/skills/get-file-content/get-file-content.sh <org> <project> <repo> 
 ```
 
 Use branch names from the PR details (`sourceRefName` / `targetRefName`). Strip the `refs/heads/` prefix.
+
+URL-encoding policy for skill scripts:
+
+- URL path/query components derived from org/project/repo/path/version inputs should use encoded values.
+- If a raw component is intentionally required, annotate only that line with `lint:allow-unencoded-url` and include a short rationale.
+- Avoid broad suppression patterns.
 
 ### 5. Optionally get diff summary
 
@@ -199,8 +253,11 @@ If the skill script is unavailable, skip this check and continue with code/confi
 ### 6. Read existing comments
 
 ```bash
-bash .github/skills/get-pr-threads/get-pr-threads.sh <org> <project> <repo> <prId>
+# Fetch only active, non-system threads (recommended — filters out vote changes and ref updates)
+bash .github/skills/get-pr-threads/get-pr-threads.sh <org> <project> <repo> <prId> active true
 ```
+
+Optional: omit the last two arguments to fetch all threads unfiltered.
 
 Avoid duplicating feedback that reviewers have already provided.
 

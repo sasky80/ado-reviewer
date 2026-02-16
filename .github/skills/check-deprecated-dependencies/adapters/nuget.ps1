@@ -64,10 +64,29 @@ if (-not [string]::IsNullOrWhiteSpace($Version)) {
 }
 else {
     $selected = $entries[$entries.Count - 1]
-    $Version = [string]$selected.catalogEntry.version
+    $selectedCatalog = $null
+    if ($selected -and $selected.PSObject.Properties.Name -contains 'catalogEntry') {
+        $selectedCatalog = $selected.catalogEntry
+    }
+
+    if ($selectedCatalog -and $selectedCatalog.PSObject.Properties.Name -contains 'version') {
+        $Version = [string]$selectedCatalog.version
+    }
+    else {
+        $Version = ''
+    }
 }
 
-$deprecation = $selected.catalogEntry.deprecation
+$catalogEntry = $null
+if ($selected -and $selected.PSObject.Properties.Name -contains 'catalogEntry') {
+    $catalogEntry = $selected.catalogEntry
+}
+
+$deprecation = $null
+if ($catalogEntry -and $catalogEntry.PSObject.Properties.Name -contains 'deprecation') {
+    $deprecation = $catalogEntry.deprecation
+}
+
 $deprecated = $false
 $message = ''
 $replacement = ''
