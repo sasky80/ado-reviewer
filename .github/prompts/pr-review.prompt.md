@@ -106,7 +106,7 @@ Then use the **latest** iteration ID:
 bash .github/skills/get-pr-changes/get-pr-changes.sh <org> <project> <repo> <prId> <iterationId>
 ```
 
-### 3. Search for repository coding standards and best practices
+### 3. Search for repository coding standards and best practices only when asked by the user
 
 Before reviewing code, look for coding standards, conventions, and best-practice documents defined in the repository. Fetch the following well-known files from the **target branch** (if they exist):
 
@@ -279,6 +279,47 @@ bash .github/skills/reset-feedback/reset-feedback.sh <org> <project> <repo> <prI
 ```
 
 Use reset only when the user explicitly asks to clear prior vote feedback.
+
+### 11. Review process self-assessment
+
+Perform a structured self-assessment of the review process itself **only when explicitly requested by the user** (for example: "run self-assessment", "assess review process", or equivalent). Do not run this step automatically at the end of every review.
+
+Evaluate the following dimensions and present them using the output template below.
+
+#### Dimensions to assess
+
+1. **Prompt-processing issues** — Did any skill invocation fail, time out, or return unexpected output? Were there parsing errors, missing data, or ambiguous results that required workarounds?
+2. **Data completeness** — Were all changed files retrieved successfully? Were both base and PR versions available? Did advisory/deprecation scans execute where applicable?
+3. **Process effectiveness** — How well did the review cover the defined Review Criteria categories (Security, Best Practices, Performance, Testing, Architecture)? Were any categories skipped or only superficially covered, and why?
+4. **Time & effort efficiency** — Were there redundant skill calls, unnecessary fetches, or steps that could have been parallelized or skipped? Estimate the proportion of effort spent gathering data vs. analyzing it.
+5. **Improvement opportunities** — What concrete changes to the prompt, workflow, or skill usage would improve future reviews? Examples: additional context that should be auto-fetched, heuristics to skip irrelevant files, better diff strategies for large PRs.
+6. **Missing skills / tooling gaps** — Would a new skill, tool, or integration have improved the review? Describe the capability, what it would accept as input, and what value it would add. Examples: automated style-lint integration, AI-assisted test-gap detection, architectural-diagram generation from changed modules.
+
+#### Self-assessment output template
+
+```
+### 🔍 Review Process Self-Assessment
+
+| Dimension | Rating | Notes |
+|---|---|---|
+| Prompt Processing | ✅ OK · ⚠️ Issues · ❌ Failures | Brief description |
+| Data Completeness | ✅ Complete · ⚠️ Partial · ❌ Incomplete | Brief description |
+| Process Effectiveness | ✅ Thorough · ⚠️ Adequate · ❌ Gaps | Brief description |
+| Efficiency | ✅ Optimal · ⚠️ Acceptable · ❌ Wasteful | Brief description |
+
+#### Improvement Opportunities
+- <concrete suggestion 1>
+- <concrete suggestion 2>
+
+#### Missing Skills / Tooling Gaps
+- **<Skill name>** — <description of capability, inputs, and expected value>
+- (or "None identified" if the current toolset was sufficient)
+
+#### Key Takeaways
+<1–3 sentences summarizing what went well and the single highest-impact improvement for future reviews>
+```
+
+Keep the assessment concise and actionable. Focus on observations backed by evidence from the current review session, not hypothetical concerns.
 
 ## Reviewer Behavior & Decision Rules
 
