@@ -40,6 +40,7 @@ go run ./tools/skills-go/cmd/skills-go <skill> <args...>
 | `get-pr-iterations` | Push iterations of a PR |
 | `get-pr-changes` | Files changed in a PR iteration |
 | `get-pr-changed-files` | Projected changed-file list (path/changeType) for efficient fetch planning |
+| `get-pr-review-bundle` | Paged PR metadata + changed files + threads bundle for large PR-safe review setup |
 | `get-pr-diff-line-mapper` | Line-level diff hunks for changed files in a PR iteration |
 | `get-file-content` | File content at a given version |
 | `get-multiple-files` | Batch-fetch multiple files at a given version |
@@ -97,6 +98,16 @@ go run ./tools/skills-go/cmd/skills-go get-pr-details <org> <project> <repo> <pr
 Obtain the title, description, status, source / target branches, reviewers, and merge info.
 
 ### 2. Discover changed files
+
+Preferred for large PRs (single paged bootstrap call):
+
+```bash
+go run ./tools/skills-go/cmd/skills-go get-pr-review-bundle <org> <project> <repo> <prId> [iterationId] [fileOffset] [fileLimit] [threadOffset] [threadLimit] [statusFilter] [excludeSystem] [includeLineMap]
+```
+
+Use this to quickly obtain PR metadata, selected/latest iteration, projected file page, and filtered thread page with `hasMore` and next offsets.
+
+Alternative explicit flow:
 
 ```bash
 go run ./tools/skills-go/cmd/skills-go get-pr-iterations <org> <project> <repo> <prId>

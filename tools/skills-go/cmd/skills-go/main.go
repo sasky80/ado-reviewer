@@ -14,8 +14,8 @@ import (
 	"ado-reviewer/tools/skills-go/internal/diffmapper"
 	"ado-reviewer/tools/skills-go/internal/files"
 	"ado-reviewer/tools/skills-go/internal/iterations"
-	"ado-reviewer/tools/skills-go/internal/pullrequests"
 	"ado-reviewer/tools/skills-go/internal/projects"
+	"ado-reviewer/tools/skills-go/internal/pullrequests"
 	"ado-reviewer/tools/skills-go/internal/repositories"
 	"ado-reviewer/tools/skills-go/internal/reviews"
 )
@@ -69,6 +69,8 @@ func main() {
 		handleGetPRDependencyAdvisories(os.Args[2:])
 	case "get-pr-diff-line-mapper":
 		handleGetPRDiffLineMapper(os.Args[2:])
+	case "get-pr-review-bundle":
+		handleGetPRReviewBundle(os.Args[2:])
 	default:
 		fatalf("unsupported command: %s", command)
 	}
@@ -340,8 +342,103 @@ func printJSON(value any) {
 	fmt.Println(string(encoded))
 }
 
+func handleGetPRReviewBundle(args []string) {
+	if len(args) < 4 {
+		fatalf("usage: skills-go get-pr-review-bundle <organization> <project> <repositoryId> <pullRequestId> [iterationId] [fileOffset] [fileLimit] [threadOffset] [threadLimit] [statusFilter] [excludeSystem] [includeLineMap]")
+	}
+
+	options, err := parseReviewBundleOptions(args)
+	if err != nil {
+		fatalf(err.Error())
+	}
+
+	result, err := pullrequests.GetReviewBundle(options)
+	if err != nil {
+		fatalErr(err)
+	}
+
+	printJSON(result)
+}
+
+func parseReviewBundleOptions(args []string) (pullrequests.ReviewBundleOptions, error) {
+	if len(args) < 4 {
+		return pullrequests.ReviewBundleOptions{}, fmt.Errorf("usage: skills-go get-pr-review-bundle <organization> <project> <repositoryId> <pullRequestId> [iterationId] [fileOffset] [fileLimit] [threadOffset] [threadLimit] [statusFilter] [excludeSystem] [includeLineMap]")
+	}
+
+	iterationID := ""
+	if len(args) >= 5 {
+		iterationID = strings.TrimSpace(args[4])
+	}
+
+	fileOffset := 0
+	if len(args) >= 6 {
+		parsed, err := strconv.Atoi(strings.TrimSpace(args[5]))
+		if err != nil || parsed < 0 {
+			return pullrequests.ReviewBundleOptions{}, fmt.Errorf("fileOffset must be a non-negative integer")
+		}
+		fileOffset = parsed
+	}
+
+	fileLimit := 100
+	if len(args) >= 7 {
+		parsed, err := strconv.Atoi(strings.TrimSpace(args[6]))
+		if err != nil || parsed <= 0 {
+			return pullrequests.ReviewBundleOptions{}, fmt.Errorf("fileLimit must be a positive integer")
+		}
+		fileLimit = parsed
+	}
+
+	threadOffset := 0
+	if len(args) >= 8 {
+		parsed, err := strconv.Atoi(strings.TrimSpace(args[7]))
+		if err != nil || parsed < 0 {
+			return pullrequests.ReviewBundleOptions{}, fmt.Errorf("threadOffset must be a non-negative integer")
+		}
+		threadOffset = parsed
+	}
+
+	threadLimit := 100
+	if len(args) >= 9 {
+		parsed, err := strconv.Atoi(strings.TrimSpace(args[8]))
+		if err != nil || parsed <= 0 {
+			return pullrequests.ReviewBundleOptions{}, fmt.Errorf("threadLimit must be a positive integer")
+		}
+		threadLimit = parsed
+	}
+
+	statusFilter := ""
+	if len(args) >= 10 {
+		statusFilter = strings.TrimSpace(args[9])
+	}
+
+	excludeSystem := true
+	if len(args) >= 11 {
+		excludeSystem = strings.EqualFold(strings.TrimSpace(args[10]), "true")
+	}
+
+	includeLineMap := false
+	if len(args) >= 12 {
+		includeLineMap = strings.EqualFold(strings.TrimSpace(args[11]), "true")
+	}
+
+	return pullrequests.ReviewBundleOptions{
+		Organization:         strings.TrimSpace(args[0]),
+		Project:              strings.TrimSpace(args[1]),
+		RepositoryID:         strings.TrimSpace(args[2]),
+		PullRequestID:        strings.TrimSpace(args[3]),
+		IterationID:          iterationID,
+		FileOffset:           fileOffset,
+		FileLimit:            fileLimit,
+		ThreadOffset:         threadOffset,
+		ThreadLimit:          threadLimit,
+		ThreadStatusFilter:   statusFilter,
+		ExcludeSystemThreads: excludeSystem,
+		IncludeLineMap:       includeLineMap,
+	}, nil
+}
+
 func printUsageAndExit() {
-	fatalf("usage: skills-go <command> [args]\ncommands:\n  check-deprecated-dependencies <ecosystem> <package> [version]\n  list-projects <organization>\n  list-repositories <organization> <project>\n  get-pr-details <organization> <project> <repositoryId> <pullRequestId>\n  get-pr-iterations <organization> <project> <repositoryId> <pullRequestId>\n  get-pr-changes <organization> <project> <repositoryId> <pullRequestId> <iterationId>\n  get-pr-changed-files <organization> <project> <repositoryId> <pullRequestId> <iterationId>\n  get-pr-threads <organization> <project> <repositoryId> <pullRequestId> [statusFilter] [excludeSystem]\n  post-pr-comment <organization> <project> <repositoryId> <pullRequestId> <filePath> <line> <comment>\n  update-pr-thread <organization> <project> <repositoryId> <pullRequestId> <threadId> [reply] [status]\n  get-file-content <organization> <project> <repositoryId> <path> [version] [versionType]\n  get-multiple-files <organization> <project> <repositoryId> <version> <versionType> '<json_paths_array>'\n  get-commit-diffs <organization> <project> <repositoryId> <baseVersion> <targetVersion> [baseVersionType] [targetVersionType]\n  get-github-advisories <ecosystem> <package> [version] [severity] [per_page]\n  get-pr-dependency-advisories <organization> <project> <repositoryId> <pullRequestId> [iterationId] [per_page]\n  get-pr-diff-line-mapper <organization> <project> <repositoryId> <pullRequestId> <iterationId>\n  accept-pr <organization> <project> <repositoryId> <pullRequestId>\n  approve-with-suggestions <organization> <project> <repositoryId> <pullRequestId>\n  wait-for-author <organization> <project> <repositoryId> <pullRequestId>\n  reject-pr <organization> <project> <repositoryId> <pullRequestId>\n  reset-feedback <organization> <project> <repositoryId> <pullRequestId>")
+	fatalf("usage: skills-go <command> [args]\ncommands:\n  check-deprecated-dependencies <ecosystem> <package> [version]\n  list-projects <organization>\n  list-repositories <organization> <project>\n  get-pr-details <organization> <project> <repositoryId> <pullRequestId>\n  get-pr-iterations <organization> <project> <repositoryId> <pullRequestId>\n  get-pr-changes <organization> <project> <repositoryId> <pullRequestId> <iterationId>\n  get-pr-changed-files <organization> <project> <repositoryId> <pullRequestId> <iterationId>\n  get-pr-review-bundle <organization> <project> <repositoryId> <pullRequestId> [iterationId] [fileOffset] [fileLimit] [threadOffset] [threadLimit] [statusFilter] [excludeSystem] [includeLineMap]\n  get-pr-threads <organization> <project> <repositoryId> <pullRequestId> [statusFilter] [excludeSystem]\n  post-pr-comment <organization> <project> <repositoryId> <pullRequestId> <filePath> <line> <comment>\n  update-pr-thread <organization> <project> <repositoryId> <pullRequestId> <threadId> [reply] [status]\n  get-file-content <organization> <project> <repositoryId> <path> [version] [versionType]\n  get-multiple-files <organization> <project> <repositoryId> <version> <versionType> '<json_paths_array>'\n  get-commit-diffs <organization> <project> <repositoryId> <baseVersion> <targetVersion> [baseVersionType] [targetVersionType]\n  get-github-advisories <ecosystem> <package> [version] [severity] [per_page]\n  get-pr-dependency-advisories <organization> <project> <repositoryId> <pullRequestId> [iterationId] [per_page]\n  get-pr-diff-line-mapper <organization> <project> <repositoryId> <pullRequestId> <iterationId>\n  accept-pr <organization> <project> <repositoryId> <pullRequestId>\n  approve-with-suggestions <organization> <project> <repositoryId> <pullRequestId>\n  wait-for-author <organization> <project> <repositoryId> <pullRequestId>\n  reject-pr <organization> <project> <repositoryId> <pullRequestId>\n  reset-feedback <organization> <project> <repositoryId> <pullRequestId>")
 }
 
 func fatalErr(err error) {
