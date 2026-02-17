@@ -86,6 +86,7 @@ Test-SkillCheck -Name 'get-pr-details' -ScriptPath (Join-Path $skillsRoot 'get-p
 Test-SkillCheck -Name 'get-pr-iterations' -ScriptPath (Join-Path $skillsRoot 'get-pr-iterations\get-pr-iterations.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr)
 Test-SkillCheck -Name 'get-pr-changes' -ScriptPath (Join-Path $skillsRoot 'get-pr-changes\get-pr-changes.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr, $Iteration)
 Test-SkillCheck -Name 'get-pr-changed-files' -ScriptPath (Join-Path $skillsRoot 'get-pr-changed-files\get-pr-changed-files.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr, $Iteration)
+Test-SkillCheck -Name 'get-pr-diff-line-mapper' -ScriptPath (Join-Path $skillsRoot 'get-pr-diff-line-mapper\get-pr-diff-line-mapper.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr, $Iteration)
 Test-SkillCheck -Name 'get-pr-threads' -ScriptPath (Join-Path $skillsRoot 'get-pr-threads\get-pr-threads.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr)
 Test-SkillCheck -Name 'get-pr-threads (filtered)' -ScriptPath (Join-Path $skillsRoot 'get-pr-threads\get-pr-threads.ps1') -SkillArgs @($Org, $Project, $Repo, $Pr, 'active', 'true')
 $previousStrictSetting = $env:URL_ENCODING_LINT_STRICT

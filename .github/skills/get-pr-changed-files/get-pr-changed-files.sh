@@ -23,17 +23,17 @@ PROJECT_ENC="$(urlencode "$PROJECT")"
 REPO_ID_ENC="$(urlencode "$REPO_ID")"
 
 RAW_JSON="$(curl -s --fail-with-body --max-time 30 \
-  -H "Authorization: Basic ${ADO_AUTH}" \
-  -H "Accept: application/json" \
-  "https://dev.azure.com/${ORG_ENC}/${PROJECT_ENC}/_apis/git/repositories/${REPO_ID_ENC}/pullRequests/${PR_ID}/iterations/${ITERATION_ID}/changes?api-version=7.2-preview")"
+    -H "Authorization: Basic ${ADO_AUTH}" \
+    -H "Accept: application/json" \
+    "https://dev.azure.com/${ORG_ENC}/${PROJECT_ENC}/_apis/git/repositories/${REPO_ID_ENC}/pullRequests/${PR_ID}/iterations/${ITERATION_ID}/changes?api-version=7.2-preview")"
 
-python3 - "$RAW_JSON" "$PR_ID" "$ITERATION_ID" <<'PYEOF'
+printf '%s' "$RAW_JSON" | python3 - "$PR_ID" "$ITERATION_ID" <<'PYEOF'
 import json
 import sys
 
-payload = json.loads(sys.argv[1])
-pr_id = sys.argv[2]
-iteration_id = sys.argv[3]
+payload = json.load(sys.stdin)
+pr_id = sys.argv[1]
+iteration_id = sys.argv[2]
 
 files = []
 for entry in payload.get("changeEntries", []):

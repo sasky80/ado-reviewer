@@ -88,6 +88,9 @@ run_check "get-pr-changes" \
 run_check "get-pr-changed-files" \
   bash .github/skills/get-pr-changed-files/get-pr-changed-files.sh "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION"
 
+run_check "get-pr-diff-line-mapper" \
+  bash .github/skills/get-pr-diff-line-mapper/get-pr-diff-line-mapper.sh "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION"
+
 run_check "get-pr-threads" \
   bash .github/skills/get-pr-threads/get-pr-threads.sh "$ORG" "$PROJECT" "$REPO" "$PR"
 

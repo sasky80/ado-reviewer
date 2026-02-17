@@ -28,7 +28,7 @@ bash .github/skills/list-repositories/list-repositories.sh myorg MyProject
 ```
 
 ```powershell
-pwsh -ExecutionPolicy Bypass -File .\github\skills\list-repositories\list-repositories.ps1 myorg MyProject
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\list-repositories\list-repositories.ps1 myorg MyProject
 ```
 
 ## Output

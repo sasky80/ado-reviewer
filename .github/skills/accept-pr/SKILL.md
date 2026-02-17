@@ -33,7 +33,7 @@ bash .github/skills/accept-pr/accept-pr.sh myorg MyProject MyRepo 42
 
 ```powershell
 # Approve PR 42 (Windows)
-pwsh -ExecutionPolicy Bypass -File .\github\skills\accept-pr\accept-pr.ps1 myorg MyProject MyRepo 42
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\accept-pr\accept-pr.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output

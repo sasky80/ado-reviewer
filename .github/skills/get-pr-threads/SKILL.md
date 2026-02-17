@@ -38,10 +38,10 @@ bash .github/skills/get-pr-threads/get-pr-threads.sh myorg MyProject MyRepo 42 "
 
 ```powershell
 # All threads (default)
-pwsh -ExecutionPolicy Bypass -File .github\skills\get-pr-threads\get-pr-threads.ps1 myorg MyProject MyRepo 42
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\get-pr-threads\get-pr-threads.ps1 myorg MyProject MyRepo 42
 
 # Only active, non-system threads
-pwsh -ExecutionPolicy Bypass -File .github\skills\get-pr-threads\get-pr-threads.ps1 myorg MyProject MyRepo 42 active true
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\get-pr-threads\get-pr-threads.ps1 myorg MyProject MyRepo 42 active true
 ```
 
 ## Output

@@ -30,7 +30,7 @@ bash .github/skills/approve-with-suggestions/approve-with-suggestions.sh myorg M
 ```
 
 ```powershell
-pwsh -ExecutionPolicy Bypass -File .\github\skills\approve-with-suggestions\approve-with-suggestions.ps1 myorg MyProject MyRepo 42
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\approve-with-suggestions\approve-with-suggestions.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output

@@ -39,10 +39,10 @@ bash .github/skills/post-pr-comment/post-pr-comment.sh myorg MyProject MyRepo 42
 
 ```powershell
 # Inline comment on a specific file and line (Windows, canonical repository path)
-.\github\skills\post-pr-comment\post-pr-comment.ps1 myorg MyProject MyRepo 42 /src/app.js 15 "Consider using const here."
+.\.github\skills\post-pr-comment\post-pr-comment.ps1 myorg MyProject MyRepo 42 /src/app.js 15 "Consider using const here."
 
 # General PR-level comment (Windows)
-.\github\skills\post-pr-comment\post-pr-comment.ps1 myorg MyProject MyRepo 42 - 0 "Overall the code looks good."
+.\.github\skills\post-pr-comment\post-pr-comment.ps1 myorg MyProject MyRepo 42 - 0 "Overall the code looks good."
 ```
 
 ## Formatting Note

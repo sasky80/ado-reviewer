@@ -32,7 +32,7 @@ bash .github/skills/get-pr-changed-files/get-pr-changed-files.sh myorg MyProject
 ```
 
 ```powershell
-pwsh -ExecutionPolicy Bypass -File .\github\skills\get-pr-changed-files\get-pr-changed-files.ps1 myorg MyProject MyRepo 42 3
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\get-pr-changed-files\get-pr-changed-files.ps1 myorg MyProject MyRepo 42 3
 ```
 
 ## Output

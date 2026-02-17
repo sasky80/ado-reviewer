@@ -38,10 +38,10 @@ bash .github/skills/get-file-content/get-file-content.sh myorg MyProject MyRepo 
 
 ```powershell
 # Get file from a specific branch (Windows)
-.\github\skills\get-file-content\get-file-content.ps1 myorg MyProject MyRepo /src/app.js main branch
+.\.github\skills\get-file-content\get-file-content.ps1 myorg MyProject MyRepo /src/app.js main branch
 
 # Get file from a specific commit (Windows)
-.\github\skills\get-file-content\get-file-content.ps1 myorg MyProject MyRepo /src/app.js abc123 commit
+.\.github\skills\get-file-content\get-file-content.ps1 myorg MyProject MyRepo /src/app.js abc123 commit
 ```
 
 ## Output

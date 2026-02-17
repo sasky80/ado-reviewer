@@ -14,7 +14,7 @@ $url = "https://dev.azure.com/$($ctx.OrganizationEncoded)/$($ctx.ProjectEncoded)
 $raw = Invoke-AdoRequest -Method GET -Url $url -Headers $ctx.Headers
 $payload = $raw | ConvertFrom-Json
 
-$files = @()
+$files = New-Object System.Collections.Generic.List[object]
 foreach ($entry in $payload.changeEntries) {
     $item = $entry.item
     $itemPath = $null
@@ -31,19 +31,19 @@ foreach ($entry in $payload.changeEntries) {
         $isFolder = [bool]$item.isFolder
     }
 
-    $files += [pscustomobject]@{
+    $files.Add([pscustomobject]@{
         path             = $path
         changeType       = $entry.changeType
         changeTrackingId = $entry.changeTrackingId
         isFolder         = $isFolder
-    }
+    })
 }
 
 $result = [pscustomobject]@{
     pullRequestId = $PullRequestId
     iterationId   = $IterationId
     count         = $files.Count
-    files         = $files
+    files         = $files.ToArray()
 }
 
 Write-Json -InputObject $result

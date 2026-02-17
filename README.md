@@ -63,7 +63,7 @@ $env:ADO_PAT_my_org = "<your_pat>"
 # Optional but recommended for dependency vulnerability checks:
 $env:GH_SEC_PAT = "<your_github_pat>"
 
-pwsh -ExecutionPolicy Bypass -File .\github\skills\get-pr-details\get-pr-details.ps1 $Org $Project $Repo $Pr
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\get-pr-details\get-pr-details.ps1 $Org $Project $Repo $Pr
 ```
 
 Use this for a fast smoke test. For full setup (including validation and command examples),
@@ -369,6 +369,7 @@ Most skills call Azure DevOps REST API (`api-version=7.2-preview`).
 | `get-pr-iterations` | `.github/skills/get-pr-iterations/get-pr-iterations.sh` | Lists PR iterations (push updates). |
 | `get-pr-changes` | `.github/skills/get-pr-changes/get-pr-changes.sh` | Lists changed files for a PR iteration. |
 | `get-pr-changed-files` | `.github/skills/get-pr-changed-files/get-pr-changed-files.sh` | Returns projected changed files (`path`, `changeType`, `changeTrackingId`, `isFolder`). |
+| `get-pr-diff-line-mapper` | `.github/skills/get-pr-diff-line-mapper/get-pr-diff-line-mapper.sh` | Maps changed files to line-level diff hunks (`old/new` ranges and per-hunk counts). |
 | `get-file-content` | `.github/skills/get-file-content/get-file-content.sh` | Gets file content at a path/version (branch/commit/tag). |
 | `get-commit-diffs` | `.github/skills/get-commit-diffs/get-commit-diffs.sh` | Gets a diff summary between two versions. |
 | `list-repositories` | `.github/skills/list-repositories/list-repositories.sh` | Lists repositories in a project. |
@@ -411,11 +412,12 @@ repository-specific standards paths so they apply by default.
 3. `get-pr-iterations` to find the latest iteration.
 4. `get-pr-changed-files` (or `get-pr-changes`) to list modified files.
 5. `get-file-content` / `get-multiple-files` to compare file versions (target branch and source branch).
-6. `get-pr-threads` to avoid duplicate comments.
-7. Optional: `get-commit-diffs` for a high-level diff summary.
-8. Optional (dependency changes): `get-pr-dependency-advisories` to automatically scan changed manifests and query advisories.
-9. `post-pr-comment` to publish selected findings.
-10. `update-pr-thread` to reply and resolve threads.
+6. Optional: `get-pr-diff-line-mapper` to derive precise line-hunk ranges for inline comment targeting.
+7. `get-pr-threads` to avoid duplicate comments.
+8. Optional: `get-commit-diffs` for a high-level diff summary.
+9. Optional (dependency changes): `get-pr-dependency-advisories` to automatically scan changed manifests and query advisories.
+10. `post-pr-comment` to publish selected findings.
+11. `update-pr-thread` to reply and resolve threads.
 
 Dependency advisory example:
 
@@ -424,7 +426,7 @@ bash .github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.sh
 ```
 
 ```powershell
-pwsh -ExecutionPolicy Bypass -File .\github\skills\get-pr-dependency-advisories\get-pr-dependency-advisories.ps1 $Org $Project $Repo $Pr $Iteration
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\get-pr-dependency-advisories\get-pr-dependency-advisories.ps1 $Org $Project $Repo $Pr $Iteration
 ```
 
 ## Validation (Optional)

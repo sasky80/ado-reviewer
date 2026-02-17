@@ -36,7 +36,7 @@ bash .github/skills/get-github-advisories/get-github-advisories.sh npm lodash 4.
 ```
 
 ```powershell
-pwsh -ExecutionPolicy Bypass -File .\github\skills\get-github-advisories\get-github-advisories.ps1 npm lodash 4.17.20 high 20
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\get-github-advisories\get-github-advisories.ps1 npm lodash 4.17.20 high 20
 ```
 
 ## Output

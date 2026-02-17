@@ -31,7 +31,7 @@ bash .github/skills/reject-pr/reject-pr.sh myorg MyProject MyRepo 42
 ```
 
 ```powershell
-pwsh -ExecutionPolicy Bypass -File .\github\skills\reject-pr\reject-pr.ps1 myorg MyProject MyRepo 42
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\reject-pr\reject-pr.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output

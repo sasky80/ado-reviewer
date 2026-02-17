@@ -31,7 +31,7 @@ bash .github/skills/get-pr-iterations/get-pr-iterations.sh myorg MyProject MyRep
 ```
 
 ```powershell
-pwsh -ExecutionPolicy Bypass -File .\github\skills\get-pr-iterations\get-pr-iterations.ps1 myorg MyProject MyRepo 42
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\get-pr-iterations\get-pr-iterations.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output

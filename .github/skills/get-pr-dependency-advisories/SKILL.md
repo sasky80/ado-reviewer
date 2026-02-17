@@ -53,7 +53,7 @@ bash .github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.sh
 ```
 
 ```powershell
-pwsh -ExecutionPolicy Bypass -File .\github\skills\get-pr-dependency-advisories\get-pr-dependency-advisories.ps1 myorg MyProject MyRepo 42
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\get-pr-dependency-advisories\get-pr-dependency-advisories.ps1 myorg MyProject MyRepo 42
 ```
 
 ## Output

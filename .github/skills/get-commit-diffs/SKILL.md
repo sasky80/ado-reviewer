@@ -36,7 +36,7 @@ bash .github/skills/get-commit-diffs/get-commit-diffs.sh myorg MyProject MyRepo 
 
 ```powershell
 # Compare two branches (Windows)
-pwsh -ExecutionPolicy Bypass -File .\github\skills\get-commit-diffs\get-commit-diffs.ps1 myorg MyProject MyRepo main feature/login branch branch
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\get-commit-diffs\get-commit-diffs.ps1 myorg MyProject MyRepo main feature/login branch branch
 ```
 
 ## Output

@@ -44,13 +44,13 @@ bash .github/skills/update-pr-thread/update-pr-thread.sh myorg MyProject MyRepo 
 
 ```powershell
 # Reply and mark as fixed (Windows)
-pwsh -ExecutionPolicy Bypass -File .\github\skills\update-pr-thread\update-pr-thread.ps1 myorg MyProject MyRepo 42 7 "Fixed: refactored to use parameterized queries." fixed
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\update-pr-thread\update-pr-thread.ps1 myorg MyProject MyRepo 42 7 "Fixed: refactored to use parameterized queries." fixed
 
 # Reply only (keep thread active) (Windows)
-pwsh -ExecutionPolicy Bypass -File .\github\skills\update-pr-thread\update-pr-thread.ps1 myorg MyProject MyRepo 42 7 "Working on this, will push a fix shortly."
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\update-pr-thread\update-pr-thread.ps1 myorg MyProject MyRepo 42 7 "Working on this, will push a fix shortly."
 
 # Update status only (no reply) (Windows)
-pwsh -ExecutionPolicy Bypass -File .\github\skills\update-pr-thread\update-pr-thread.ps1 myorg MyProject MyRepo 42 7 - fixed
+pwsh -ExecutionPolicy Bypass -File .\.github\skills\update-pr-thread\update-pr-thread.ps1 myorg MyProject MyRepo 42 7 - fixed
 ```
 
 ## Output

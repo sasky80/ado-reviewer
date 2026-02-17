@@ -37,6 +37,14 @@ Execution rule by OS:
 Windows command-construction guardrails:
 
 - Prefer `-File` invocation for skill scripts. Do **not** wrap skill calls in long `pwsh -Command "..."` one-liners unless necessary.
+- In this repository, skill scripts live under `.github/skills/...` (folder name includes the leading dot). On Windows, prefer paths like `.\\.github\\skills\\...`; do **not** use `.\\github\\skills\\...`.
+- Quick path sanity check before invocation (optional):
+
+```powershell
+$script = '.\.github\skills\get-pr-iterations\get-pr-iterations.ps1'
+if (-not (Test-Path $script)) { throw "Skill script not found: $script" }
+pwsh -NoProfile -ExecutionPolicy Bypass -File $script myorg myproject myrepo 1
+```
 - If `-Command` is required for multi-step orchestration, wrap the script block in **single quotes** so `$` variables (for example `$_`) are not expanded prematurely.
 - For complex parameter passing, prefer splatting:
 
@@ -71,6 +79,7 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\invoke-skill.ps1 \
 | `get-pr-iterations` | `.github/skills/get-pr-iterations/get-pr-iterations.sh` | Push iterations of a PR |
 | `get-pr-changes` | `.github/skills/get-pr-changes/get-pr-changes.sh` | Files changed in a PR iteration |
 | `get-pr-changed-files` | `.github/skills/get-pr-changed-files/get-pr-changed-files.sh` | Projected changed-file list (path/changeType) for efficient fetch planning |
+| `get-pr-diff-line-mapper` | `.github/skills/get-pr-diff-line-mapper/get-pr-diff-line-mapper.sh` | Line-level diff hunks for changed files in a PR iteration |
 | `get-file-content` | `.github/skills/get-file-content/get-file-content.sh` | File content at a given version |
 | `get-multiple-files` | `.github/skills/get-multiple-files/get-multiple-files.sh` | Batch-fetch multiple files at a given version |
 | `get-commit-diffs` | `.github/skills/get-commit-diffs/get-commit-diffs.sh` | Diff summary between versions |
@@ -201,6 +210,20 @@ URL-encoding policy for skill scripts:
 
 ```bash
 bash .github/skills/get-commit-diffs/get-commit-diffs.sh <org> <project> <repo> <targetBranch> <sourceBranch> branch branch
+```
+
+### 5a. Optionally map diffs to exact line ranges
+
+Use this when you need precise hunk ranges for inline comment placement:
+
+```bash
+bash .github/skills/get-pr-diff-line-mapper/get-pr-diff-line-mapper.sh <org> <project> <repo> <prId> <iterationId>
+```
+
+On **Windows**, execute the PowerShell variant:
+
+```powershell
+pwsh -ExecutionPolicy Bypass -File .github/skills/get-pr-diff-line-mapper/get-pr-diff-line-mapper.ps1 <org> <project> <repo> <prId> <iterationId>
 ```
 
 ### 5b. Check dependency advisories (when dependency manifests change)
