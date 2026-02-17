@@ -7,10 +7,7 @@ description: Check whether a dependency is deprecated across ecosystems (npm, pi
 
 ## Platform Note
 
-- macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
-
-Run [check-deprecated-dependencies.sh](./check-deprecated-dependencies.sh) on macOS/Linux or [check-deprecated-dependencies.ps1](./check-deprecated-dependencies.ps1) on Windows.
+- Clean-install path: use the Go command from `tools/skills-go`.
 
 ## What it does
 
@@ -35,12 +32,13 @@ Run [check-deprecated-dependencies.sh](./check-deprecated-dependencies.sh) on ma
 ## Examples
 
 ```bash
-bash .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh npm request 2.88.2
+go run ./tools/skills-go/cmd/skills-go check-deprecated-dependencies pip requests
 ```
 
-```powershell
-pwsh -ExecutionPolicy Bypass -File .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.ps1 nuget Newtonsoft.Json 13.0.1
-```
+## Go implementation
+
+- A Go implementation is available at `tools/skills-go`.
+- The Go command `check-deprecated-dependencies` returns the same normalized JSON contract.
 
 ## Output
 

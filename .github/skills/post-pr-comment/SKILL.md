@@ -10,10 +10,7 @@ description: >
 
 ## Platform Note
 
-- macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts with the same argument order
-
-Run the [post-pr-comment.sh](./post-pr-comment.sh) script on macOS/Linux or [post-pr-comment.ps1](./post-pr-comment.ps1) on Windows to create a comment thread on a pull request.
+- Clean-install path: use the Go command from `tools/skills-go`.
 
 ## Arguments
 
@@ -31,18 +28,10 @@ Run the [post-pr-comment.sh](./post-pr-comment.sh) script on macOS/Linux or [pos
 
 ```bash
 # Inline comment on a specific file and line (canonical repository path)
-bash .github/skills/post-pr-comment/post-pr-comment.sh myorg MyProject MyRepo 42 /src/app.js 15 "Consider using const here."
+go run ./tools/skills-go/cmd/skills-go post-pr-comment myorg MyProject MyRepo 42 /src/app.js 15 "Consider using const here."
 
 # General PR-level comment
-bash .github/skills/post-pr-comment/post-pr-comment.sh myorg MyProject MyRepo 42 - 0 "Overall the code looks good."
-```
-
-```powershell
-# Inline comment on a specific file and line (Windows, canonical repository path)
-.\.github\skills\post-pr-comment\post-pr-comment.ps1 myorg MyProject MyRepo 42 /src/app.js 15 "Consider using const here."
-
-# General PR-level comment (Windows)
-.\.github\skills\post-pr-comment\post-pr-comment.ps1 myorg MyProject MyRepo 42 - 0 "Overall the code looks good."
+go run ./tools/skills-go/cmd/skills-go post-pr-comment myorg MyProject MyRepo 42 - 0 "Overall the code looks good."
 ```
 
 ## Formatting Note

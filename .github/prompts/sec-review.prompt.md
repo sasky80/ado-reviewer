@@ -37,26 +37,12 @@ If no path is provided, review the whole repository.
 
 ## Audit Workflow
 
-### Windows command-construction guardrails
+### Command execution
 
-- On Windows, prefer `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` for skill execution.
-- Avoid long `pwsh -Command "..."` one-liners for multi-step orchestration.
-- If `-Command` is required, wrap the script block in single quotes so `$` variables (for example `$_`) are not expanded prematurely.
-- For complex parameter passing, prefer splatting:
+- Run skills through the Go runner:
 
-```powershell
-$script = Join-Path (Get-Location) '.github/skills/get-github-advisories/get-github-advisories.ps1'
-$params = @{ Ecosystem='npm'; Package='lodash'; Version='4.17.20' }
-$raw = & $script @params
-$obj = $raw | ConvertFrom-Json
-```
-
-- Prefer the helper wrapper for repeatable Windows calls:
-
-```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\invoke-skill.ps1 \
-	-SkillPath .github/skills/get-github-advisories/get-github-advisories.ps1 \
-	-SkillArgs @('npm','lodash','4.17.20')
+```bash
+go run ./tools/skills-go/cmd/skills-go <skill> <args...>
 ```
 
 ### 1) Establish scope and context
@@ -104,16 +90,10 @@ Audit code and configuration for:
 
 - If the `get-github-advisories` skill is available in this workspace and advisory credentials are configured, use it to validate introduced or updated dependencies.
 - Extract package ecosystem, name, and version from changed manifests/lockfiles, then query advisories per dependency.
-- On **Windows**, run:
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .github/skills/get-github-advisories/get-github-advisories.ps1 <ecosystem> <package> <version>
-```
-
-- On **macOS/Linux**, run:
+- Run:
 
 ```bash
-bash .github/skills/get-github-advisories/get-github-advisories.sh <ecosystem> <package> <version>
+go run ./tools/skills-go/cmd/skills-go get-github-advisories <ecosystem> <package> <version>
 ```
 
 - If the skill folder/script or required token (for example `GH_SEC_PAT`) is missing, skip advisory queries and continue with code/config evidence only.
@@ -122,20 +102,14 @@ bash .github/skills/get-github-advisories/get-github-advisories.sh <ecosystem> <
 ### 2c) Dependency deprecation scan (if configured)
 
 - If the `check-deprecated-dependencies` skill is available in this workspace, use it to validate whether introduced/updated dependencies are deprecated.
-- On **Windows**, run:
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.ps1 <ecosystem> <package> <version>
-```
-
-- On **macOS/Linux**, run:
+- Run:
 
 ```bash
-bash .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh <ecosystem> <package> <version>
+go run ./tools/skills-go/cmd/skills-go check-deprecated-dependencies <ecosystem> <package> <version>
 ```
 
 - Treat explicit deprecation signals as supply-chain findings when the deprecated package/version is introduced or upgraded by the reviewed change.
-- If the skill folder/script is missing, skip deprecation queries and continue with code/config evidence only.
+- If the skill command is missing, skip deprecation queries and continue with code/config evidence only.
 
 #### Infrastructure-as-Code / Deployment Config (if present)
 - Over-privileged identities/roles

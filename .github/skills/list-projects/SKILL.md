@@ -9,10 +9,7 @@ description: >
 
 ## Platform Note
 
-- macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
-
-Run the [list-projects.sh](./list-projects.sh) script on macOS/Linux or [list-projects.ps1](./list-projects.ps1) on Windows to list projects.
+- Clean-install path: use the Go command from `tools/skills-go`.
 
 ## Arguments
 
@@ -23,11 +20,7 @@ Run the [list-projects.sh](./list-projects.sh) script on macOS/Linux or [list-pr
 ## Examples
 
 ```bash
-bash .github/skills/list-projects/list-projects.sh myorg
-```
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .\.github\skills\list-projects\list-projects.ps1 myorg
+go run ./tools/skills-go/cmd/skills-go list-projects myorg
 ```
 
 ## Output

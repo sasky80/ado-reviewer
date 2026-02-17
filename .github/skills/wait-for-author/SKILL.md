@@ -9,10 +9,7 @@ description: >
 
 ## Platform Note
 
-- macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
-
-Run the [wait-for-author.sh](./wait-for-author.sh) script on macOS/Linux or [wait-for-author.ps1](./wait-for-author.ps1) on Windows to set the reviewer vote to waiting for author.
+- Clean-install path: use the Go command from `tools/skills-go`.
 
 ## Arguments
 
@@ -26,11 +23,7 @@ Run the [wait-for-author.sh](./wait-for-author.sh) script on macOS/Linux or [wai
 ## Examples
 
 ```bash
-bash .github/skills/wait-for-author/wait-for-author.sh myorg MyProject MyRepo 42
-```
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .\.github\skills\wait-for-author\wait-for-author.ps1 myorg MyProject MyRepo 42
+go run ./tools/skills-go/cmd/skills-go wait-for-author myorg MyProject MyRepo 42
 ```
 
 ## Output

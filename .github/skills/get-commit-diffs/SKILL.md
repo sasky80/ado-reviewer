@@ -10,10 +10,7 @@ description: >
 
 ## Platform Note
 
-- macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
-
-Run the [get-commit-diffs.sh](./get-commit-diffs.sh) script on macOS/Linux or [get-commit-diffs.ps1](./get-commit-diffs.ps1) on Windows to get a diff summary.
+- Clean-install path: use the Go command from `tools/skills-go`.
 
 ## Arguments
 
@@ -31,12 +28,7 @@ Run the [get-commit-diffs.sh](./get-commit-diffs.sh) script on macOS/Linux or [g
 
 ```bash
 # Compare two branches
-bash .github/skills/get-commit-diffs/get-commit-diffs.sh myorg MyProject MyRepo main feature/login branch branch
-```
-
-```powershell
-# Compare two branches (Windows)
-pwsh -ExecutionPolicy Bypass -File .\.github\skills\get-commit-diffs\get-commit-diffs.ps1 myorg MyProject MyRepo main feature/login branch branch
+go run ./tools/skills-go/cmd/skills-go get-commit-diffs myorg MyProject MyRepo main feature/login branch branch
 ```
 
 ## Output

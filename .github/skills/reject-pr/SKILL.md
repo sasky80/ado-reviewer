@@ -10,10 +10,7 @@ description: >
 
 ## Platform Note
 
-- macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
-
-Run the [reject-pr.sh](./reject-pr.sh) script on macOS/Linux or [reject-pr.ps1](./reject-pr.ps1) on Windows to reject a pull request.
+- Clean-install path: use the Go command from `tools/skills-go`.
 
 ## Arguments
 
@@ -27,11 +24,7 @@ Run the [reject-pr.sh](./reject-pr.sh) script on macOS/Linux or [reject-pr.ps1](
 ## Examples
 
 ```bash
-bash .github/skills/reject-pr/reject-pr.sh myorg MyProject MyRepo 42
-```
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .\.github\skills\reject-pr\reject-pr.ps1 myorg MyProject MyRepo 42
+go run ./tools/skills-go/cmd/skills-go reject-pr myorg MyProject MyRepo 42
 ```
 
 ## Output

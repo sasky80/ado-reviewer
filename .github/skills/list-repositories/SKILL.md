@@ -9,10 +9,7 @@ description: >
 
 ## Platform Note
 
-- macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
-
-Run the [list-repositories.sh](./list-repositories.sh) script on macOS/Linux or [list-repositories.ps1](./list-repositories.ps1) on Windows to list repositories.
+- Clean-install path: use the Go command from `tools/skills-go`.
 
 ## Arguments
 
@@ -24,11 +21,7 @@ Run the [list-repositories.sh](./list-repositories.sh) script on macOS/Linux or 
 ## Examples
 
 ```bash
-bash .github/skills/list-repositories/list-repositories.sh myorg MyProject
-```
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .\.github\skills\list-repositories\list-repositories.ps1 myorg MyProject
+go run ./tools/skills-go/cmd/skills-go list-repositories myorg MyProject
 ```
 
 ## Output

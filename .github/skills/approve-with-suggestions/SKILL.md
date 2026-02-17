@@ -9,10 +9,7 @@ description: >
 
 ## Platform Note
 
-- macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
-
-Run the [approve-with-suggestions.sh](./approve-with-suggestions.sh) script on macOS/Linux or [approve-with-suggestions.ps1](./approve-with-suggestions.ps1) on Windows to approve a pull request with suggestions.
+- Clean-install path: use the Go command from `tools/skills-go`.
 
 ## Arguments
 
@@ -26,11 +23,7 @@ Run the [approve-with-suggestions.sh](./approve-with-suggestions.sh) script on m
 ## Examples
 
 ```bash
-bash .github/skills/approve-with-suggestions/approve-with-suggestions.sh myorg MyProject MyRepo 42
-```
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .\.github\skills\approve-with-suggestions\approve-with-suggestions.ps1 myorg MyProject MyRepo 42
+go run ./tools/skills-go/cmd/skills-go approve-with-suggestions myorg MyProject MyRepo 42
 ```
 
 ## Output

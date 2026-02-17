@@ -10,10 +10,7 @@ description: >
 
 ## Platform Note
 
-- macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
-
-Run the [get-pr-changed-files.sh](./get-pr-changed-files.sh) script on macOS/Linux or [get-pr-changed-files.ps1](./get-pr-changed-files.ps1) on Windows to retrieve a projected file list.
+- Clean-install path: use the Go command from `tools/skills-go`.
 
 ## Arguments
 
@@ -28,11 +25,7 @@ Run the [get-pr-changed-files.sh](./get-pr-changed-files.sh) script on macOS/Lin
 ## Examples
 
 ```bash
-bash .github/skills/get-pr-changed-files/get-pr-changed-files.sh myorg MyProject MyRepo 42 3
-```
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .\.github\skills\get-pr-changed-files\get-pr-changed-files.ps1 myorg MyProject MyRepo 42 3
+go run ./tools/skills-go/cmd/skills-go get-pr-changed-files myorg MyProject MyRepo 42 3
 ```
 
 ## Output

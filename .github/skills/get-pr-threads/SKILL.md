@@ -7,10 +7,7 @@ description: Fetch all comment threads on an Azure DevOps pull request (review c
 
 ## Platform Note
 
-- macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
-
-Run the [get-pr-threads.sh](./get-pr-threads.sh) script on macOS/Linux or [get-pr-threads.ps1](./get-pr-threads.ps1) on Windows to retrieve comment threads.
+- Clean-install path: use the Go command from `tools/skills-go`.
 
 ## Arguments
 
@@ -27,21 +24,13 @@ Run the [get-pr-threads.sh](./get-pr-threads.sh) script on macOS/Linux or [get-p
 
 ```bash
 # All threads (default)
-bash .github/skills/get-pr-threads/get-pr-threads.sh myorg MyProject MyRepo 42
+go run ./tools/skills-go/cmd/skills-go get-pr-threads myorg MyProject MyRepo 42
 
 # Only active, non-system threads
-bash .github/skills/get-pr-threads/get-pr-threads.sh myorg MyProject MyRepo 42 active true
+go run ./tools/skills-go/cmd/skills-go get-pr-threads myorg MyProject MyRepo 42 active true
 
 # All statuses but exclude system threads
-bash .github/skills/get-pr-threads/get-pr-threads.sh myorg MyProject MyRepo 42 "" true
-```
-
-```powershell
-# All threads (default)
-pwsh -ExecutionPolicy Bypass -File .\.github\skills\get-pr-threads\get-pr-threads.ps1 myorg MyProject MyRepo 42
-
-# Only active, non-system threads
-pwsh -ExecutionPolicy Bypass -File .\.github\skills\get-pr-threads\get-pr-threads.ps1 myorg MyProject MyRepo 42 active true
+go run ./tools/skills-go/cmd/skills-go get-pr-threads myorg MyProject MyRepo 42 "" true
 ```
 
 ## Output

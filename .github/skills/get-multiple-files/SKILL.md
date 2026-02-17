@@ -1,16 +1,13 @@
 ---
 name: get-multiple-files
-description: Fetch the content of multiple files from an Azure DevOps Git repository in a single invocation to reduce round-trips; the bash variant fetches files in parallel and the PowerShell variant fetches sequentially.
+description: Fetch the content of multiple files from an Azure DevOps Git repository in a single invocation to reduce round-trips.
 ---
 
 # Get Multiple Files
 
 ## Platform Note
 
-- macOS/Linux: run `.sh` scripts (files fetched in parallel)
-- Windows: run `.ps1` scripts with the same argument order (files fetched sequentially)
-
-Run the [get-multiple-files.sh](./get-multiple-files.sh) script on macOS/Linux or [get-multiple-files.ps1](./get-multiple-files.ps1) on Windows.
+- Clean-install path: use the Go command from `tools/skills-go`.
 
 ## Arguments
 
@@ -27,18 +24,10 @@ Run the [get-multiple-files.sh](./get-multiple-files.sh) script on macOS/Linux o
 
 ```bash
 # Fetch two files from the main branch
-bash .github/skills/get-multiple-files/get-multiple-files.sh myorg MyProject MyRepo main branch '["/src/app.js", "/README.md"]'
+go run ./tools/skills-go/cmd/skills-go get-multiple-files myorg MyProject MyRepo main branch '["/src/app.js", "/README.md"]'
 
 # Fetch files from a specific commit
-bash .github/skills/get-multiple-files/get-multiple-files.sh myorg MyProject MyRepo abc123 commit '["/src/app.js", "/docs/guide.md"]'
-```
-
-```powershell
-# Fetch two files from the main branch (Windows)
-pwsh -ExecutionPolicy Bypass -File .github/skills/get-multiple-files/get-multiple-files.ps1 myorg MyProject MyRepo main branch '["/src/app.js", "/README.md"]'
-
-# Fetch files from a specific commit (Windows)
-pwsh -ExecutionPolicy Bypass -File .github/skills/get-multiple-files/get-multiple-files.ps1 myorg MyProject MyRepo abc123 commit '["/src/app.js", "/docs/guide.md"]'
+go run ./tools/skills-go/cmd/skills-go get-multiple-files myorg MyProject MyRepo abc123 commit '["/src/app.js", "/docs/guide.md"]'
 ```
 
 ## Output
@@ -68,6 +57,6 @@ Returns a JSON object with:
 ```
 
 - `status` is `"ok"` for successfully retrieved files or `"error"` for failures.
-- Failed files include an `error` field with the failure reason; they do **not** cause the script to exit with a non-zero code.
+- Failed files include an `error` field with the failure reason; they do **not** cause the command to exit with a non-zero code.
 - `succeeded`, `failed`, and `total` provide summary counts.
 ```
