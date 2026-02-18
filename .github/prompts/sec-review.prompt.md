@@ -37,6 +37,14 @@ If no path is provided, review the whole repository.
 
 ## Audit Workflow
 
+### Command execution
+
+- Run skills through the Go runner:
+
+```bash
+go run ./.github/tools/skills-go/cmd/skills-go <skill> <args...>
+```
+
 ### 1) Establish scope and context
 
 - Determine review scope from user prompt (`file`, `folder`, or full repo).
@@ -82,16 +90,10 @@ Audit code and configuration for:
 
 - If the `get-github-advisories` skill is available in this workspace and advisory credentials are configured, use it to validate introduced or updated dependencies.
 - Extract package ecosystem, name, and version from changed manifests/lockfiles, then query advisories per dependency.
-- On **Windows**, run:
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .github/skills/get-github-advisories/get-github-advisories.ps1 <ecosystem> <package> <version>
-```
-
-- On **macOS/Linux**, run:
+- Run:
 
 ```bash
-bash .github/skills/get-github-advisories/get-github-advisories.sh <ecosystem> <package> <version>
+go run ./.github/tools/skills-go/cmd/skills-go get-github-advisories <ecosystem> <package> <version>
 ```
 
 - If the skill folder/script or required token (for example `GH_SEC_PAT`) is missing, skip advisory queries and continue with code/config evidence only.
@@ -100,20 +102,14 @@ bash .github/skills/get-github-advisories/get-github-advisories.sh <ecosystem> <
 ### 2c) Dependency deprecation scan (if configured)
 
 - If the `check-deprecated-dependencies` skill is available in this workspace, use it to validate whether introduced/updated dependencies are deprecated.
-- On **Windows**, run:
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.ps1 <ecosystem> <package> <version>
-```
-
-- On **macOS/Linux**, run:
+- Run:
 
 ```bash
-bash .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh <ecosystem> <package> <version>
+go run ./.github/tools/skills-go/cmd/skills-go check-deprecated-dependencies <ecosystem> <package> <version>
 ```
 
 - Treat explicit deprecation signals as supply-chain findings when the deprecated package/version is introduced or upgraded by the reviewed change.
-- If the skill folder/script is missing, skip deprecation queries and continue with code/config evidence only.
+- If the skill command is missing, skip deprecation queries and continue with code/config evidence only.
 
 #### Infrastructure-as-Code / Deployment Config (if present)
 - Over-privileged identities/roles

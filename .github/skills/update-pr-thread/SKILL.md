@@ -10,10 +10,7 @@ description: >
 
 ## Platform Note
 
-- macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
-
-Run the [update-pr-thread.sh](./update-pr-thread.sh) script on macOS/Linux or [update-pr-thread.ps1](./update-pr-thread.ps1) on Windows to reply to and/or resolve a PR comment thread.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## Arguments
 
@@ -33,24 +30,13 @@ At least one of `reply` or `status` must be provided.
 
 ```bash
 # Reply and mark as fixed
-bash .github/skills/update-pr-thread/update-pr-thread.sh myorg MyProject MyRepo 42 7 "Fixed: refactored to use parameterized queries." fixed
+go run ./.github/tools/skills-go/cmd/skills-go update-pr-thread myorg MyProject MyRepo 42 7 "Fixed: refactored to use parameterized queries." fixed
 
 # Reply only (keep thread active)
-bash .github/skills/update-pr-thread/update-pr-thread.sh myorg MyProject MyRepo 42 7 "Working on this, will push a fix shortly."
+go run ./.github/tools/skills-go/cmd/skills-go update-pr-thread myorg MyProject MyRepo 42 7 "Working on this, will push a fix shortly."
 
 # Update status only (no reply)
-bash .github/skills/update-pr-thread/update-pr-thread.sh myorg MyProject MyRepo 42 7 - fixed
-```
-
-```powershell
-# Reply and mark as fixed (Windows)
-pwsh -ExecutionPolicy Bypass -File .\github\skills\update-pr-thread\update-pr-thread.ps1 myorg MyProject MyRepo 42 7 "Fixed: refactored to use parameterized queries." fixed
-
-# Reply only (keep thread active) (Windows)
-pwsh -ExecutionPolicy Bypass -File .\github\skills\update-pr-thread\update-pr-thread.ps1 myorg MyProject MyRepo 42 7 "Working on this, will push a fix shortly."
-
-# Update status only (no reply) (Windows)
-pwsh -ExecutionPolicy Bypass -File .\github\skills\update-pr-thread\update-pr-thread.ps1 myorg MyProject MyRepo 42 7 - fixed
+go run ./.github/tools/skills-go/cmd/skills-go update-pr-thread myorg MyProject MyRepo 42 7 - fixed
 ```
 
 ## Output

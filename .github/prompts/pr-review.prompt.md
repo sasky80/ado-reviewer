@@ -27,35 +27,38 @@ PAT_VAR="ADO_PAT_${ORG_ENV_SUFFIX}"
 
 ## Available Skills
 
-You have the following script-based skills for interacting with Azure DevOps. Run them in the terminal:
+Use the Go runner for all Azure DevOps skills via:
 
-Execution rule by OS:
+```bash
+go run ./.github/tools/skills-go/cmd/skills-go <skill> <args...>
+```
 
-- On **Windows**, execute the PowerShell script variant (`.ps1`) via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` in the same skill folder with the same argument order.
-- On **macOS/Linux**, execute the bash script variant (`.sh`).
+| Skill | Purpose |
+|-------|---------|
+| `get-pr-details` | PR metadata (title, branches, reviewers, status) |
+| `get-pr-threads` | Comment threads on a PR |
+| `get-pr-iterations` | Push iterations of a PR |
+| `get-pr-changes` | Files changed in a PR iteration |
+| `get-pr-changed-files` | Projected changed-file list (path/changeType) for efficient fetch planning |
+| `get-pr-review-bundle` | Paged PR metadata + changed files + threads bundle for large PR-safe review setup |
+| `get-pr-diff-line-mapper` | Line-level diff hunks for changed files in a PR iteration |
+| `get-file-content` | File content at a given version |
+| `get-multiple-files` | Batch-fetch multiple files at a given version |
+| `get-commit-diffs` | Diff summary between versions |
+| `list-repositories` | List repos in a project |
+| `list-projects` | List projects in the org |
+| `get-github-advisories` | Query GitHub Advisory Database for vulnerable package versions |
+| `get-pr-dependency-advisories` | Scan changed dependency manifests in a PR and query advisories automatically |
+| `check-deprecated-dependencies` | Check whether a dependency is deprecated across npm/pip/nuget |
+| `post-pr-comment` | Post a comment thread on a PR |
+| `update-pr-thread` | Reply to a thread and/or update its status |
+| `accept-pr` | Approve (accept) a pull request |
+| `approve-with-suggestions` | Approve a pull request with suggestions |
+| `wait-for-author` | Mark review as waiting for author updates |
+| `reject-pr` | Reject a pull request |
+| `reset-feedback` | Reset reviewer vote to no feedback |
 
-| Skill | Script | Purpose |
-|-------|--------|---------|
-| `get-pr-details` | `.github/skills/get-pr-details/get-pr-details.sh` | PR metadata (title, branches, reviewers, status) |
-| `get-pr-threads` | `.github/skills/get-pr-threads/get-pr-threads.sh` | Comment threads on a PR |
-| `get-pr-iterations` | `.github/skills/get-pr-iterations/get-pr-iterations.sh` | Push iterations of a PR |
-| `get-pr-changes` | `.github/skills/get-pr-changes/get-pr-changes.sh` | Files changed in a PR iteration |
-| `get-file-content` | `.github/skills/get-file-content/get-file-content.sh` | File content at a given version |
-| `get-commit-diffs` | `.github/skills/get-commit-diffs/get-commit-diffs.sh` | Diff summary between versions |
-| `list-repositories` | `.github/skills/list-repositories/list-repositories.sh` | List repos in a project |
-| `list-projects` | `.github/skills/list-projects/list-projects.sh` | List projects in the org |
-| `get-github-advisories` | `.github/skills/get-github-advisories/get-github-advisories.sh` | Query GitHub Advisory Database for vulnerable package versions |
-| `get-pr-dependency-advisories` | `.github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.sh` | Scan changed dependency manifests in a PR and query advisories automatically |
-| `check-deprecated-dependencies` | `.github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh` | Check whether a dependency is deprecated across npm/pip/nuget |
-| `post-pr-comment` | `.github/skills/post-pr-comment/post-pr-comment.sh` | Post a comment thread on a PR |
-| `update-pr-thread` | `.github/skills/update-pr-thread/update-pr-thread.sh` | Reply to a thread and/or update its status |
-| `accept-pr` | `.github/skills/accept-pr/accept-pr.sh` | Approve (accept) a pull request |
-| `approve-with-suggestions` | `.github/skills/approve-with-suggestions/approve-with-suggestions.sh` | Approve a pull request with suggestions |
-| `wait-for-author` | `.github/skills/wait-for-author/wait-for-author.sh` | Mark review as waiting for author updates |
-| `reject-pr` | `.github/skills/reject-pr/reject-pr.sh` | Reject a pull request |
-| `reset-feedback` | `.github/skills/reset-feedback/reset-feedback.sh` | Reset reviewer vote to no feedback |
-
-All scripts take **organization** as the first required argument.
+All commands take **organization** as the first required argument.
 
 ## User Prompt Examples
 
@@ -89,21 +92,37 @@ When the user provides a pull request ID (and project/repo information), follow 
 ### 1. Gather PR metadata
 
 ```bash
-bash .github/skills/get-pr-details/get-pr-details.sh <org> <project> <repo> <prId>
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-details <org> <project> <repo> <prId>
 ```
 
 Obtain the title, description, status, source / target branches, reviewers, and merge info.
 
 ### 2. Discover changed files
 
+Preferred for large PRs (single paged bootstrap call):
+
 ```bash
-bash .github/skills/get-pr-iterations/get-pr-iterations.sh <org> <project> <repo> <prId>
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-review-bundle <org> <project> <repo> <prId> [iterationId] [fileOffset] [fileLimit] [threadOffset] [threadLimit] [statusFilter] [excludeSystem] [includeLineMap]
+```
+
+Use this to quickly obtain PR metadata, selected/latest iteration, projected file page, and filtered thread page with `hasMore` and next offsets.
+
+Alternative explicit flow:
+
+```bash
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-iterations <org> <project> <repo> <prId>
 ```
 
 Then use the **latest** iteration ID:
 
 ```bash
-bash .github/skills/get-pr-changes/get-pr-changes.sh <org> <project> <repo> <prId> <iterationId>
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-changes <org> <project> <repo> <prId> <iterationId>
+```
+
+For a compact projection (recommended as default input for downstream file fetches):
+
+```bash
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-changed-files <org> <project> <repo> <prId> <iterationId>
 ```
 
 ### 3. Search for repository coding standards and best practices only when asked by the user
@@ -122,7 +141,7 @@ Before reviewing code, look for coding standards, conventions, and best-practice
 For each file, attempt to fetch it using:
 
 ```bash
-bash .github/skills/get-file-content/get-file-content.sh <org> <project> <repo> <filePath> <targetBranch> branch
+go run ./.github/tools/skills-go/cmd/skills-go get-file-content <org> <project> <repo> <filePath> <targetBranch> branch
 ```
 
 Silently skip files that do not exist (404 responses). Do **not** report missing standards files as review findings.
@@ -131,22 +150,46 @@ Use any discovered standards and rules as **additional review criteria** alongsi
 
 ### 4. Retrieve file contents
 
-For every changed file, fetch both versions:
+Use projected file paths from `get-pr-changed-files` (or `get-pr-changes`) and fetch both versions. **Prefer `get-multiple-files`** when retrieving more than one file at the same version to reduce round-trips:
+
+```bash
+# Batch: fetch all changed files from target branch (base / "before")
+go run ./.github/tools/skills-go/cmd/skills-go get-multiple-files <org> <project> <repo> <targetBranch> branch '<json_array_of_paths>'
+
+# Batch: fetch all changed files from source branch (PR / "after")
+go run ./.github/tools/skills-go/cmd/skills-go get-multiple-files <org> <project> <repo> <sourceBranch> branch '<json_array_of_paths>'
+```
+
+Fallback for a single file:
 
 ```bash
 # Target branch (base / "before")
-bash .github/skills/get-file-content/get-file-content.sh <org> <project> <repo> <filePath> <targetBranch> branch
+go run ./.github/tools/skills-go/cmd/skills-go get-file-content <org> <project> <repo> <filePath> <targetBranch> branch
 
 # Source branch (PR / "after")
-bash .github/skills/get-file-content/get-file-content.sh <org> <project> <repo> <filePath> <sourceBranch> branch
+go run ./.github/tools/skills-go/cmd/skills-go get-file-content <org> <project> <repo> <filePath> <sourceBranch> branch
 ```
 
 Use branch names from the PR details (`sourceRefName` / `targetRefName`). Strip the `refs/heads/` prefix.
 
+URL-encoding policy for skill commands:
+
+- URL path/query components derived from org/project/repo/path/version inputs should use encoded values.
+- If a raw component is intentionally required, annotate only that line with `lint:allow-unencoded-url` and include a short rationale.
+- Avoid broad suppression patterns.
+
 ### 5. Optionally get diff summary
 
 ```bash
-bash .github/skills/get-commit-diffs/get-commit-diffs.sh <org> <project> <repo> <targetBranch> <sourceBranch> branch branch
+go run ./.github/tools/skills-go/cmd/skills-go get-commit-diffs <org> <project> <repo> <targetBranch> <sourceBranch> branch branch
+```
+
+### 5a. Optionally map diffs to exact line ranges
+
+Use this when you need precise hunk ranges for inline comment placement:
+
+```bash
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-diff-line-mapper <org> <project> <repo> <prId> <iterationId>
 ```
 
 ### 5b. Check dependency advisories (when dependency manifests change)
@@ -154,53 +197,38 @@ bash .github/skills/get-commit-diffs/get-commit-diffs.sh <org> <project> <repo> 
 If the advisory skills and required credentials are configured, run the PR-level advisory scanner first:
 
 ```bash
-bash .github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.sh <org> <project> <repo> <prId> <iterationId>
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-dependency-advisories <org> <project> <repo> <prId> <iterationId>
 ```
 
 The result includes discovered dependencies and matched advisories. Treat returned advisories with `severity` = `high` or `critical` as Security findings when they affect introduced or updated dependencies.
 
-On **Windows**, execute the PowerShell variant:
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.ps1 <org> <project> <repo> <prId> <iterationId>
-```
-
 If you need a manual follow-up query for a specific package, use:
 
 ```bash
-bash .github/skills/get-github-advisories/get-github-advisories.sh <ecosystem> <package> <version>
+go run ./.github/tools/skills-go/cmd/skills-go get-github-advisories <ecosystem> <package> <version>
 ```
 
-On **Windows**, execute the PowerShell variant:
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .github/skills/get-github-advisories/get-github-advisories.ps1 <ecosystem> <package> <version>
-```
-
-If the skill scripts are unavailable or required tokens (for example `GH_SEC_PAT`) are not configured, skip advisory checks and continue the review using code/config evidence only.
+If the skill commands are unavailable or required tokens (for example `GH_SEC_PAT`) are not configured, skip advisory checks and continue the review using code/config evidence only.
 
 ### 5c. Check dependency deprecation status (when dependency manifests change)
 
 If the deprecation skill is available, check introduced/updated dependencies for explicit deprecation markers:
 
 ```bash
-bash .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh <ecosystem> <package> <version>
-```
-
-On **Windows**, execute the PowerShell variant:
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .github/skills/check-deprecated-dependencies/check-deprecated-dependencies.ps1 <ecosystem> <package> <version>
+go run ./.github/tools/skills-go/cmd/skills-go check-deprecated-dependencies <ecosystem> <package> <version>
 ```
 
 Treat confirmed deprecations affecting new/upgraded dependencies as Security findings with remediation guidance.
-If the skill script is unavailable, skip this check and continue with code/config evidence only.
+If the skill command is unavailable, skip this check and continue with code/config evidence only.
 
 ### 6. Read existing comments
 
 ```bash
-bash .github/skills/get-pr-threads/get-pr-threads.sh <org> <project> <repo> <prId>
+# Fetch only active, non-system threads (recommended — filters out vote changes and ref updates)
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-threads <org> <project> <repo> <prId> active true
 ```
+
+Optional: omit the last two arguments to fetch all threads unfiltered.
 
 Avoid duplicating feedback that reviewers have already provided.
 
@@ -217,10 +245,10 @@ For each selected finding, run:
 
 ```bash
 # Inline comment on a specific file/line
-bash .github/skills/post-pr-comment/post-pr-comment.sh <org> <project> <repo> <prId> <filePath> <line> "<comment text>"
+go run ./.github/tools/skills-go/cmd/skills-go post-pr-comment <org> <project> <repo> <prId> <filePath> <line> "<comment text>"
 
 # General comment (no file context)
-bash .github/skills/post-pr-comment/post-pr-comment.sh <org> <project> <repo> <prId> - 0 "<comment text>"
+go run ./.github/tools/skills-go/cmd/skills-go post-pr-comment <org> <project> <repo> <prId> - 0 "<comment text>"
 ```
 
 Format each comment with the severity emoji, category, description, and recommendation from the finding.
@@ -233,13 +261,13 @@ When the user asks to respond to review comments and/or mark them as resolved, u
 
 ```bash
 # Reply and mark as fixed
-bash .github/skills/update-pr-thread/update-pr-thread.sh <org> <project> <repo> <prId> <threadId> "<reply text>" fixed
+go run ./.github/tools/skills-go/cmd/skills-go update-pr-thread <org> <project> <repo> <prId> <threadId> "<reply text>" fixed
 
 # Reply only (keep thread active)
-bash .github/skills/update-pr-thread/update-pr-thread.sh <org> <project> <repo> <prId> <threadId> "<reply text>"
+go run ./.github/tools/skills-go/cmd/skills-go update-pr-thread <org> <project> <repo> <prId> <threadId> "<reply text>"
 
 # Update status only (no reply)
-bash .github/skills/update-pr-thread/update-pr-thread.sh <org> <project> <repo> <prId> <threadId> - fixed
+go run ./.github/tools/skills-go/cmd/skills-go update-pr-thread <org> <project> <repo> <prId> <threadId> - fixed
 ```
 
 Valid statuses: `active`, `fixed`, `closed`, `byDesign`, `pending`, `wontFix`.
@@ -251,31 +279,31 @@ When the overall assessment and user intent are clear, set the reviewer vote usi
 - ✅ **Approve**
 
 ```bash
-bash .github/skills/accept-pr/accept-pr.sh <org> <project> <repo> <prId>
+go run ./.github/tools/skills-go/cmd/skills-go accept-pr <org> <project> <repo> <prId>
 ```
 
 - ✅➕ **Approve with suggestions**
 
 ```bash
-bash .github/skills/approve-with-suggestions/approve-with-suggestions.sh <org> <project> <repo> <prId>
+go run ./.github/tools/skills-go/cmd/skills-go approve-with-suggestions <org> <project> <repo> <prId>
 ```
 
 - ⏳ **Wait for author**
 
 ```bash
-bash .github/skills/wait-for-author/wait-for-author.sh <org> <project> <repo> <prId>
+go run ./.github/tools/skills-go/cmd/skills-go wait-for-author <org> <project> <repo> <prId>
 ```
 
 - ❌ **Reject**
 
 ```bash
-bash .github/skills/reject-pr/reject-pr.sh <org> <project> <repo> <prId>
+go run ./.github/tools/skills-go/cmd/skills-go reject-pr <org> <project> <repo> <prId>
 ```
 
 - ♻️ **Reset feedback**
 
 ```bash
-bash .github/skills/reset-feedback/reset-feedback.sh <org> <project> <repo> <prId>
+go run ./.github/tools/skills-go/cmd/skills-go reset-feedback <org> <project> <repo> <prId>
 ```
 
 Use reset only when the user explicitly asks to clear prior vote feedback.

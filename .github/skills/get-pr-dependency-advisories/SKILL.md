@@ -7,10 +7,7 @@ description: Scan changed dependency manifests in a PR and query GitHub Advisory
 
 ## Platform Note
 
-- macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
-
-Run [get-pr-dependency-advisories.sh](./get-pr-dependency-advisories.sh) on macOS/Linux or [get-pr-dependency-advisories.ps1](./get-pr-dependency-advisories.ps1) on Windows.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## Authentication
 
@@ -49,11 +46,7 @@ Run [get-pr-dependency-advisories.sh](./get-pr-dependency-advisories.sh) on macO
 ## Examples
 
 ```bash
-bash .github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.sh myorg MyProject MyRepo 42
-```
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .\github\skills\get-pr-dependency-advisories\get-pr-dependency-advisories.ps1 myorg MyProject MyRepo 42
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-dependency-advisories myorg MyProject MyRepo 42
 ```
 
 ## Output

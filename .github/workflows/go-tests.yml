@@ -1,0 +1,69 @@
+name: Go Tests
+
+on:
+  pull_request:
+    branches:
+      - "**"
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  go-short-tests:
+    name: Go short tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .github/tools/skills-go
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: .github/tools/skills-go/go.mod
+
+      - name: Run short unit tests
+        run: go test -short ./...
+
+  go-live-integration-tests:
+    name: Go live integration tests
+    runs-on: ubuntu-latest
+    needs: go-short-tests
+    if: github.event_name != 'pull_request'
+    defaults:
+      run:
+        working-directory: .github/tools/skills-go
+    env:
+      ADO_IT_ORG: ${{ secrets.ADO_IT_ORG }}
+      ADO_IT_PROJECT: ${{ secrets.ADO_IT_PROJECT }}
+      ADO_IT_REPO: ${{ secrets.ADO_IT_REPO }}
+      ADO_IT_PR: ${{ secrets.ADO_IT_PR }}
+      ADO_IT_ITERATION: ${{ secrets.ADO_IT_ITERATION }}
+      GH_SEC_PAT: ${{ secrets.GH_SEC_PAT }}
+      ADO_IT_PAT: ${{ secrets.ADO_IT_PAT }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: .github/tools/skills-go/go.mod
+
+      - name: Export dynamic ADO PAT variable
+        shell: bash
+        run: |
+          suffix="$(printf '%s' "$ADO_IT_ORG" | sed -E 's/[^A-Za-z0-9_]/_/g')"
+          if [[ "$suffix" =~ ^[0-9] ]]; then
+            suffix="_${suffix}"
+          fi
+          echo "ADO_PAT_${suffix}=${ADO_IT_PAT}" >> "$GITHUB_ENV"
+
+      - name: Run live integration tests
+        run: go test ./...

@@ -1,19 +1,18 @@
 # Azure DevOps Copilot Skills
 
-Copilot prompts (`/pr-review` and `/sec-review`) + cross-platform skills (Bash/PowerShell)
-for Azure DevOps pull request workflows, including review voting, thread actions,
-and dependency security advisory checks.
+Copilot prompts (`/pr-review` and `/sec-review`) and Go-based skill tooling for Azure DevOps pull request workflows, including review voting, thread actions, and dependency security advisory checks.
 
 For teams using GitHub Copilot Chat to review Azure DevOps pull requests from macOS/Linux or Windows.
 
 The setup uses:
 
 - Prompt files: [.github/prompts/pr-review.prompt.md](.github/prompts/pr-review.prompt.md), [.github/prompts/sec-review.prompt.md](.github/prompts/sec-review.prompt.md)
-- Skills: [.github/skills/](.github/skills/)
-- Validation scripts: [scripts/validate-skills.sh](scripts/validate-skills.sh), [scripts/validate-skills.ps1](scripts/validate-skills.ps1)
+- Go runner (recommended for clean installs): [.github/tools/skills-go](.github/tools/skills-go)
+- Skill docs: [.github/skills/](.github/skills/)
 
 ## Contents
 
+- [Go Quick Start](#go-quick-start)
 - [Quick Start](#quick-start)
 - [Prompt Commands](#prompt-commands)
 - [Requirements](#requirements)
@@ -30,7 +29,29 @@ The setup uses:
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 
+## Go Quick Start
+
+Recommended for clean installs:
+
+```bash
+go version
+cd .github/tools/skills-go
+go install ./cmd/skills-go
+
+# Example command
+skills-go check-deprecated-dependencies npm request 2.88.2
+```
+
+If your Go bin directory is not on PATH, run directly from source:
+
+```bash
+cd .github/tools/skills-go
+go run ./cmd/skills-go check-deprecated-dependencies npm request 2.88.2
+```
+
 ## Quick Start
+
+Go-based quick start:
 
 ```bash
 ORG="<your_org>"
@@ -45,7 +66,8 @@ ITERATION="<your_iteration_id>"
 export ADO_PAT_<your_normalized_org>="<your_pat>"
 # Optional but recommended for dependency vulnerability checks:
 export GH_SEC_PAT="<your_github_pat>"
-bash .github/skills/get-pr-details/get-pr-details.sh "$ORG" "$PROJECT" "$REPO" "$PR"
+cd .github/tools/skills-go
+go run ./cmd/skills-go get-pr-details "$ORG" "$PROJECT" "$REPO" "$PR"
 ```
 
 Windows PowerShell quick start:
@@ -61,7 +83,8 @@ $env:ADO_PAT_my_org = "<your_pat>"
 # Optional but recommended for dependency vulnerability checks:
 $env:GH_SEC_PAT = "<your_github_pat>"
 
-pwsh -ExecutionPolicy Bypass -File .\github\skills\get-pr-details\get-pr-details.ps1 $Org $Project $Repo $Pr
+Set-Location .github/tools/skills-go
+go run ./cmd/skills-go get-pr-details $Org $Project $Repo $Pr
 ```
 
 Use this for a fast smoke test. For full setup (including validation and command examples),
@@ -85,59 +108,41 @@ Scoped security audit examples:
 
 ## Requirements
 
+- Go 1.22+ (required for clean installs)
 - Azure DevOps Personal Access Token (PAT) with **Code** scope (read/write as needed)
 - GitHub Personal Access Token (PAT) for advisory checks via `get-github-advisories` (stored in `GH_SEC_PAT`)
 
-macOS/Linux (`.sh` skills):
-
-- Bash shell
-- `curl` (7.76+ required for `--fail-with-body` flag)
-- `python3`
-- `base64` utility
-
-Windows (`.ps1` skills):
-
-- PowerShell 5.1+
-- Built-in `Invoke-RestMethod` (included with Windows PowerShell)
-
-Quick check (macOS/Linux):
+Go quick check:
 
 ```bash
-bash --version
-curl --version
-python3 --version
-```
-
-Quick check (Windows PowerShell):
-
-```powershell
-$PSVersionTable.PSVersion
-Get-Command Invoke-RestMethod
+go version
 ```
 
 ## Setup Instructions
 
 1. Clone this repository (or copy the skill files into your existing repo).
-2. Set the Azure DevOps PAT environment variable (`ADO_PAT_<normalized_org>`) — see
+1. Set the Azure DevOps PAT environment variable (`ADO_PAT_<normalized_org>`) — see
   [Environment Variables](#environment-variables-os-specific) below.
-3. If you use placeholder examples in prompts/commands, replace
+1. If you use placeholder examples in prompts/commands, replace
   `organization`, `project`, and
   `repository` with your real values.
-4. *(Optional)* Validate skill connectivity/authentication (use the script matching your OS):
+1. *(Optional)* Validate Go-based skill connectivity/authentication:
 
    ```bash
-   ./scripts/validate-skills.sh "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
+  cd .github/tools/skills-go
+   go test -short ./...
    ```
 
-   On Windows/PowerShell, use:
+   If you configured integration-test secrets locally, run:
 
-     ```powershell
-    pwsh -ExecutionPolicy Bypass -File .\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
-     ```
+   ```bash
+  cd .github/tools/skills-go
+   go test ./...
+   ```
 
-   Advanced options and reusable wrappers are in [Validation (Optional)](#validation-optional).
+   The live integration tests are env-gated and skip automatically if variables are missing.
 
-5. Start reviewing — open GitHub Copilot Chat and use the reviewer prompt command:
+1. Start reviewing — open GitHub Copilot Chat and use the reviewer prompt command:
 
     ```text
     /pr-review review pr 1
@@ -206,14 +211,8 @@ Examples:
 
 ### PAT Lookup Scope Differences
 
-PowerShell (`.ps1`) scripts search for `ADO_PAT_*` and `GH_SEC_PAT` across three scopes:
-**Process → User → Machine**. This means PATs persisted via
-`[Environment]::SetEnvironmentVariable("...", "...", "User")` are found automatically.
-
-Bash (`.sh`) scripts only check the **current process environment** (`printenv`).
-On macOS/Linux this is the normal behavior — use `export` in your shell.
-On Windows, if you launch `bash` from PowerShell, the child process may **not**
-inherit PowerShell session variables (see [Troubleshooting](#troubleshooting)).
+The Go runner reads environment variables from the current process.
+Set variables in the same shell session used to run `go run`/`go test`.
 
 ### macOS / Linux (zsh/bash)
 
@@ -297,65 +296,65 @@ If you want to reuse these skills in another repository, copy the following path
 
 - `.github/prompts/pr-review.prompt.md`
 - `.github/prompts/sec-review.prompt.md`
-- `.github/skills/` (entire folder, including all `SKILL.md`, `.sh`, and `.ps1` files)
-- `scripts/validate-skills.sh` and `scripts/validate-skills.ps1`
+- `.github/skills/` (entire folder, including all `SKILL.md` files)
+- `.github/tools/skills-go/`
 
 Example from this repo root:
 
 ```bash
 TARGET_REPO=/path/to/your-repo
 
-mkdir -p "$TARGET_REPO/.github/prompts" "$TARGET_REPO/.github/skills" "$TARGET_REPO/scripts"
+mkdir -p "$TARGET_REPO/.github/prompts" "$TARGET_REPO/.github/skills" "$TARGET_REPO/.github/tools"
 cp .github/prompts/pr-review.prompt.md "$TARGET_REPO/.github/prompts/"
 cp .github/prompts/sec-review.prompt.md "$TARGET_REPO/.github/prompts/"
 cp -R .github/skills/* "$TARGET_REPO/.github/skills/"
-cp scripts/validate-skills.sh "$TARGET_REPO/scripts/"
-cp scripts/validate-skills.ps1 "$TARGET_REPO/scripts/"
+cp -R .github/tools/skills-go "$TARGET_REPO/.github/tools/"
 ```
 
 Then, in the target repo:
 
 ```bash
 cd /path/to/your-repo
-chmod +x .github/skills/*/*.sh scripts/validate-skills.sh
-# optional: validate the setup
-./scripts/validate-skills.sh "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
+cd .github/tools/skills-go
+go test -short ./...
 ```
 
 On Windows/PowerShell:
 
 ```powershell
 Set-Location C:\path\to\your-repo
-pwsh -ExecutionPolicy Bypass -File .\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
+Set-Location .github\tools\skills-go
+go test -short ./...
 ```
 
 ## Skills Description
 
 Most skills call Azure DevOps REST API (`api-version=7.2-preview`).
 
-- macOS/Linux: use `.sh` scripts
-- Windows: use `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` (same folder, same argument order)
+Run all skills through `skills-go` from `.github/tools/skills-go`.
 
-| Skill | Script | Description |
-|---|---|---|
-| `get-pr-details` | `.github/skills/get-pr-details/get-pr-details.sh` | Gets PR metadata (title, status, branches, reviewers, merge info). |
-| `get-pr-threads` | `.github/skills/get-pr-threads/get-pr-threads.sh` | Gets PR comment threads, including inline and system comments. |
-| `get-pr-iterations` | `.github/skills/get-pr-iterations/get-pr-iterations.sh` | Lists PR iterations (push updates). |
-| `get-pr-changes` | `.github/skills/get-pr-changes/get-pr-changes.sh` | Lists changed files for a PR iteration. |
-| `get-file-content` | `.github/skills/get-file-content/get-file-content.sh` | Gets file content at a path/version (branch/commit/tag). |
-| `get-commit-diffs` | `.github/skills/get-commit-diffs/get-commit-diffs.sh` | Gets a diff summary between two versions. |
-| `list-repositories` | `.github/skills/list-repositories/list-repositories.sh` | Lists repositories in a project. |
-| `list-projects` | `.github/skills/list-projects/list-projects.sh` | Lists projects in an organization. |
-| `get-github-advisories` | `.github/skills/get-github-advisories/get-github-advisories.sh` | Queries GitHub advisories for `package` or `package@version` in an ecosystem. |
-| `get-pr-dependency-advisories` | `.github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.sh` | Scans changed dependency manifests and queries GitHub advisories. |
-| `post-pr-comment` | `.github/skills/post-pr-comment/post-pr-comment.sh` | Posts an inline or general PR comment thread. |
-| `update-pr-thread` | `.github/skills/update-pr-thread/update-pr-thread.sh` | Replies to a comment thread and/or updates its status. |
-| `accept-pr` | `.github/skills/accept-pr/accept-pr.sh` | Casts an Approve vote on a pull request. |
-| `approve-with-suggestions` | `.github/skills/approve-with-suggestions/approve-with-suggestions.sh` | Casts an Approve with Suggestions vote on a pull request. |
-| `wait-for-author` | `.github/skills/wait-for-author/wait-for-author.sh` | Casts a Waiting for Author vote on a pull request. |
-| `reject-pr` | `.github/skills/reject-pr/reject-pr.sh` | Casts a Rejected vote on a pull request. |
-| `reset-feedback` | `.github/skills/reset-feedback/reset-feedback.sh` | Resets reviewer vote to No Vote. |
-| `check-deprecated-dependencies` | `.github/skills/check-deprecated-dependencies/check-deprecated-dependencies.sh` | Checks whether a dependency is deprecated across ecosystems (npm, pip, nuget). |
+| Skill | Description |
+| --- | --- |
+| `get-pr-details` | Gets PR metadata (title, status, branches, reviewers, merge info). |
+| `get-pr-threads` | Gets PR comment threads, including inline and system comments. |
+| `get-pr-iterations` | Lists PR iterations (push updates). |
+| `get-pr-changes` | Lists changed files for a PR iteration. |
+| `get-pr-changed-files` | Returns projected changed files (`path`, `changeType`, `changeTrackingId`, `isFolder`). |
+| `get-pr-diff-line-mapper` | Maps changed files to line-level diff hunks (`old/new` ranges and per-hunk counts). |
+| `get-file-content` | Gets file content at a path/version (branch/commit/tag). |
+| `get-commit-diffs` | Gets a diff summary between two versions. |
+| `list-repositories` | Lists repositories in a project. |
+| `list-projects` | Lists projects in an organization. |
+| `get-github-advisories` | Queries GitHub advisories for `package` or `package@version` in an ecosystem. |
+| `get-pr-dependency-advisories` | Scans changed dependency manifests and queries GitHub advisories. |
+| `post-pr-comment` | Posts an inline or general PR comment thread. |
+| `update-pr-thread` | Replies to a comment thread and/or updates its status. |
+| `accept-pr` | Casts an Approve vote on a pull request. |
+| `approve-with-suggestions` | Casts an Approve with Suggestions vote on a pull request. |
+| `wait-for-author` | Casts a Waiting for Author vote on a pull request. |
+| `reject-pr` | Casts a Rejected vote on a pull request. |
+| `reset-feedback` | Resets reviewer vote to No Vote. |
+| `check-deprecated-dependencies` | Checks whether a dependency is deprecated across ecosystems (npm, pip, nuget). |
 
 ## Before First Review
 
@@ -382,83 +381,55 @@ repository-specific standards paths so they apply by default.
 1. `get-pr-details` to identify source and target branches.
 2. Resolve standards/guides locations (user-provided or default paths).
 3. `get-pr-iterations` to find the latest iteration.
-4. `get-pr-changes` to list modified files.
-5. `get-file-content` to compare file versions (target branch and source branch).
-6. `get-pr-threads` to avoid duplicate comments.
-7. Optional: `get-commit-diffs` for a high-level diff summary.
-8. Optional (dependency changes): `get-pr-dependency-advisories` to automatically scan changed manifests and query advisories.
-9. `post-pr-comment` to publish selected findings.
-10. `update-pr-thread` to reply and resolve threads.
+4. `get-pr-changed-files` (or `get-pr-changes`) to list modified files.
+5. `get-file-content` / `get-multiple-files` to compare file versions (target branch and source branch).
+6. Optional: `get-pr-diff-line-mapper` to derive precise line-hunk ranges for inline comment targeting.
+7. `get-pr-threads` to avoid duplicate comments.
+8. Optional: `get-commit-diffs` for a high-level diff summary.
+9. Optional (dependency changes): `get-pr-dependency-advisories` to automatically scan changed manifests and query advisories.
+10. `post-pr-comment` to publish selected findings.
+11. `update-pr-thread` to reply and resolve threads.
 
 Dependency advisory example:
 
 ```bash
-bash .github/skills/get-pr-dependency-advisories/get-pr-dependency-advisories.sh "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION"
-```
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .\github\skills\get-pr-dependency-advisories\get-pr-dependency-advisories.ps1 $Org $Project $Repo $Pr $Iteration
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-dependency-advisories "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION"
 ```
 
 ## Validation (Optional)
 
-Run all skill checks to confirm authentication and connectivity:
+Run Go tests to confirm local behavior and wiring:
 
 ```bash
-./scripts/validate-skills.sh "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
+cd .github/tools/skills-go
+go test -short ./...
 ```
 
-Windows/PowerShell equivalent:
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .\scripts\validate-skills.ps1 "<org>" "<project>" "<repo>" "<pr_id>" "<iteration_id>"
-```
-
-Reusable wrappers:
-
-- Generic template for local customization:
-
-  ```bash
-  cp scripts/validate-skill-template.sh scripts/validate-skill-local.sh
-  # edit scripts/validate-skill-local.sh with your values, then:
-  ./scripts/validate-skill-local.sh
-  ```
-
-- Windows template for local customization:
-
-  ```powershell
-  Copy-Item scripts\validate-skill-template.ps1 scripts\validate-skill-local.ps1
-  # edit scripts\validate-skill-local.ps1 with your values, then:
-  pwsh -ExecutionPolicy Bypass -File .\scripts\validate-skill-local.ps1
-  ```
-
-Optional repository-specific validation inputs:
-
-- `tested_file_path` — file path used by `get-file-content` check (example: `/README.md`)
-- `branch_base` and `branch_target` — versions used by `get-commit-diffs` and
-  file-version checks (examples: `main`, `feature/my-change`)
-
-Pass them as extra args:
+Run live integration tests (only when required env vars are present):
 
 ```bash
-./scripts/validate-skills.sh "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION" "/README.md" "main" "feature/my-change"
+cd .github/tools/skills-go
+go test ./...
 ```
 
-Or set environment variables before running validation:
+Live tests are skipped automatically unless all required variables are set:
 
-```bash
-export TESTED_FILE_PATH="/README.md"
-export BRANCH_BASE="main"
-export BRANCH_TARGET="feature/my-change"
-./scripts/validate-skills.sh "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION"
-```
+- `ADO_IT_ORG`
+- `ADO_IT_PROJECT`
+- `ADO_IT_REPO`
+- `ADO_IT_PR`
+- `ADO_PAT_<normalized_org>`
+- `GH_SEC_PAT`
 
-Validation is non-mutating by default. Mutating checks (such as `post-pr-comment`,
-`accept-pr`, `approve-with-suggestions`, `wait-for-author`, `reject-pr`, and
-`reset-feedback`) are skipped unless explicitly enabled:
+Optional:
 
-```bash
-ENABLE_MUTATING_CHECKS=true ./scripts/validate-skills.sh "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION"
+- `ADO_IT_ITERATION`
+
+CI behavior in this repository:
+
+```text
+PR workflow always runs: go test -short ./...
+Live integration job runs only when required secrets are present
 ```
 
 ## Where to Find Values
@@ -467,29 +438,24 @@ Use these sources for the variables used in examples (`ORG`, `PROJECT`, `REPO`, 
 
 - `ORG` (organization): the first segment in your Azure DevOps URL, e.g. `https://dev.azure.com/<org>/...`
 - `PROJECT`: project name (or ID) from Azure DevOps Project list, or run
-  `bash .github/skills/list-projects/list-projects.sh "$ORG"`.
+  `go run ./.github/tools/skills-go/cmd/skills-go list-projects "$ORG"`.
 - `REPO`: repository name (or ID) from Repos > Files, or run
-  `bash .github/skills/list-repositories/list-repositories.sh "$ORG" "$PROJECT"`.
+  `go run ./.github/tools/skills-go/cmd/skills-go list-repositories "$ORG" "$PROJECT"`.
 - `PR`: pull request number from the PR URL and title bar (example: `.../pullrequest/123` => `PR=123`).
 - `ITERATION`: latest push iteration from
-  `bash .github/skills/get-pr-iterations/get-pr-iterations.sh "$ORG" "$PROJECT" "$REPO" "$PR"`;
+  `go run ./.github/tools/skills-go/cmd/skills-go get-pr-iterations "$ORG" "$PROJECT" "$REPO" "$PR"`;
   use the highest `id` in `value[]`.
 - `THREAD_ID`: thread `id` from
-  `bash .github/skills/get-pr-threads/get-pr-threads.sh "$ORG" "$PROJECT" "$REPO" "$PR"`
+  `go run ./.github/tools/skills-go/cmd/skills-go get-pr-threads "$ORG" "$PROJECT" "$REPO" "$PR"`
   for reply/resolve actions.
 
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
-|---|---|---|
+| --- | --- | --- |
 | `401 Unauthorized` | PAT is missing, expired, or wrong org name in env var | Verify `ADO_PAT_<normalized_org>` is set using the normalization rule above and that the PAT is valid (example: `123-org` => `ADO_PAT__123_org`) |
-| `command not found: python3` | Python 3 not installed or not on PATH | Install Python 3 and ensure `python3` is available |
-| `base64: invalid option` | GNU vs BSD flag mismatch | Scripts already handle this — ensure you're using the repo version |
-| `Permission denied` on `.sh` files | Scripts not marked executable | Run `chmod +x .github/skills/*/*.sh scripts/*.sh` |
 | Validation fails but skills work | PR or iteration ID is stale/invalid | Re-check `PR` and `ITERATION` values (see [Where to Find Values](#where-to-find-values)) |
-| Scripts fail on Windows CMD/PowerShell | Wrong script type for current shell (`.sh` vs `.ps1`) or restricted PowerShell execution policy | On Windows run `.ps1` using `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...`; on macOS/Linux use `.sh` skills |
-| PAT is set in PowerShell but `.sh` script says env var is missing | Script is running in a different shell context (WSL bash or Git Bash child process) | Set `ADO_PAT_<normalized_org>` in the same shell used to run scripts. For WSL: export inside WSL. For Git Bash launched from PowerShell: export inline, e.g. `bash -c "export ADO_PAT_my_org=$([Environment]::GetEnvironmentVariable('ADO_PAT_my_org','User')); bash .github/skills/..."` |
-| `$'\\r': command not found` in `.sh` scripts | CRLF line endings in local clone | Pull latest, then run `git add --renormalize .` and commit; the repo includes `.gitattributes` with `*.sh text eol=lf` |
+| Script path not found under `scripts/` | Legacy root scripts were removed | Use Go commands from `.github/tools/skills-go` (examples in [Go Quick Start](#go-quick-start)) |
 
 ## Contributing
 

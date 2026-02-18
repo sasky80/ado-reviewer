@@ -9,10 +9,7 @@ description: >
 
 ## Platform Note
 
-- macOS/Linux: run `.sh` scripts
-- Windows: run `.ps1` scripts via `pwsh -ExecutionPolicy Bypass -File <script.ps1> ...` with the same argument order
-
-Run the [reset-feedback.sh](./reset-feedback.sh) script on macOS/Linux or [reset-feedback.ps1](./reset-feedback.ps1) on Windows to clear reviewer vote feedback.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## Arguments
 
@@ -26,11 +23,7 @@ Run the [reset-feedback.sh](./reset-feedback.sh) script on macOS/Linux or [reset
 ## Examples
 
 ```bash
-bash .github/skills/reset-feedback/reset-feedback.sh myorg MyProject MyRepo 42
-```
-
-```powershell
-pwsh -ExecutionPolicy Bypass -File .\github\skills\reset-feedback\reset-feedback.ps1 myorg MyProject MyRepo 42
+go run ./.github/tools/skills-go/cmd/skills-go reset-feedback myorg MyProject MyRepo 42
 ```
 
 ## Output
