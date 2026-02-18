@@ -7,7 +7,7 @@ description: Scan changed dependency manifests in a PR and query GitHub Advisory
 
 ## Platform Note
 
-- Clean-install path: use the Go command from `tools/skills-go`.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## Authentication
 
@@ -46,7 +46,7 @@ description: Scan changed dependency manifests in a PR and query GitHub Advisory
 ## Examples
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-pr-dependency-advisories myorg MyProject MyRepo 42
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-dependency-advisories myorg MyProject MyRepo 42
 ```
 
 ## Output

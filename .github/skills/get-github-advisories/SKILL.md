@@ -7,7 +7,7 @@ description: Query the GitHub Advisory Database for vulnerabilities affecting a 
 
 ## Platform Note
 
-- Clean-install path: use the Go command from `tools/skills-go`.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## Authentication
 
@@ -29,7 +29,7 @@ Set `GH_SEC_PAT` to a GitHub Personal Access Token.
 ## Examples
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-github-advisories npm lodash 4.17.20 high 20
+go run ./.github/tools/skills-go/cmd/skills-go get-github-advisories npm lodash 4.17.20 high 20
 ```
 
 ## Output

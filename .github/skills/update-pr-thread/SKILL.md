@@ -10,7 +10,7 @@ description: >
 
 ## Platform Note
 
-- Clean-install path: use the Go command from `tools/skills-go`.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## Arguments
 
@@ -30,13 +30,13 @@ At least one of `reply` or `status` must be provided.
 
 ```bash
 # Reply and mark as fixed
-go run ./tools/skills-go/cmd/skills-go update-pr-thread myorg MyProject MyRepo 42 7 "Fixed: refactored to use parameterized queries." fixed
+go run ./.github/tools/skills-go/cmd/skills-go update-pr-thread myorg MyProject MyRepo 42 7 "Fixed: refactored to use parameterized queries." fixed
 
 # Reply only (keep thread active)
-go run ./tools/skills-go/cmd/skills-go update-pr-thread myorg MyProject MyRepo 42 7 "Working on this, will push a fix shortly."
+go run ./.github/tools/skills-go/cmd/skills-go update-pr-thread myorg MyProject MyRepo 42 7 "Working on this, will push a fix shortly."
 
 # Update status only (no reply)
-go run ./tools/skills-go/cmd/skills-go update-pr-thread myorg MyProject MyRepo 42 7 - fixed
+go run ./.github/tools/skills-go/cmd/skills-go update-pr-thread myorg MyProject MyRepo 42 7 - fixed
 ```
 
 ## Output

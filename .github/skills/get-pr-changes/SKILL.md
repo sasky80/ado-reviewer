@@ -10,7 +10,7 @@ description: >
 
 ## Platform Note
 
-- Clean-install path: use the Go command from `tools/skills-go`.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## Arguments
 
@@ -25,7 +25,7 @@ description: >
 ## Examples
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-pr-changes myorg MyProject MyRepo 42 3
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-changes myorg MyProject MyRepo 42 3
 ```
 
 ## Output

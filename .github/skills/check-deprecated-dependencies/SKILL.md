@@ -7,7 +7,7 @@ description: Check whether a dependency is deprecated across ecosystems (npm, pi
 
 ## Platform Note
 
-- Clean-install path: use the Go command from `tools/skills-go`.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## What it does
 
@@ -32,12 +32,12 @@ description: Check whether a dependency is deprecated across ecosystems (npm, pi
 ## Examples
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go check-deprecated-dependencies pip requests
+go run ./.github/tools/skills-go/cmd/skills-go check-deprecated-dependencies pip requests
 ```
 
 ## Go implementation
 
-- A Go implementation is available at `tools/skills-go`.
+- A Go implementation is available at `.github/tools/skills-go`.
 - The Go command `check-deprecated-dependencies` returns the same normalized JSON contract.
 
 ## Output

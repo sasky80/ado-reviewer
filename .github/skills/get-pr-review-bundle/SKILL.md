@@ -11,7 +11,7 @@ description: >
 
 ## Platform Note
 
-- Clean-install path: use the Go command from `tools/skills-go`.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## Arguments
 
@@ -34,10 +34,10 @@ description: >
 
 ```bash
 # Summary-first bundle for a large PR
-go run ./tools/skills-go/cmd/skills-go get-pr-review-bundle myorg MyProject MyRepo 42
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-review-bundle myorg MyProject MyRepo 42
 
 # Fetch next page of files while keeping thread page at start
-go run ./tools/skills-go/cmd/skills-go get-pr-review-bundle myorg MyProject MyRepo 42 "" 100 100 0 100 active true false
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-review-bundle myorg MyProject MyRepo 42 "" 100 100 0 100 active true false
 ```
 
 ## Output

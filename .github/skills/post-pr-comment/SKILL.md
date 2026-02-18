@@ -10,7 +10,7 @@ description: >
 
 ## Platform Note
 
-- Clean-install path: use the Go command from `tools/skills-go`.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## Arguments
 
@@ -28,10 +28,10 @@ description: >
 
 ```bash
 # Inline comment on a specific file and line (canonical repository path)
-go run ./tools/skills-go/cmd/skills-go post-pr-comment myorg MyProject MyRepo 42 /src/app.js 15 "Consider using const here."
+go run ./.github/tools/skills-go/cmd/skills-go post-pr-comment myorg MyProject MyRepo 42 /src/app.js 15 "Consider using const here."
 
 # General PR-level comment
-go run ./tools/skills-go/cmd/skills-go post-pr-comment myorg MyProject MyRepo 42 - 0 "Overall the code looks good."
+go run ./.github/tools/skills-go/cmd/skills-go post-pr-comment myorg MyProject MyRepo 42 - 0 "Overall the code looks good."
 ```
 
 ## Formatting Note

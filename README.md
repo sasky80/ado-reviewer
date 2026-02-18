@@ -7,7 +7,7 @@ For teams using GitHub Copilot Chat to review Azure DevOps pull requests from ma
 The setup uses:
 
 - Prompt files: [.github/prompts/pr-review.prompt.md](.github/prompts/pr-review.prompt.md), [.github/prompts/sec-review.prompt.md](.github/prompts/sec-review.prompt.md)
-- Go runner (recommended for clean installs): [tools/skills-go](tools/skills-go)
+- Go runner (recommended for clean installs): [.github/tools/skills-go](.github/tools/skills-go)
 - Skill docs: [.github/skills/](.github/skills/)
 
 ## Contents
@@ -35,7 +35,7 @@ Recommended for clean installs:
 
 ```bash
 go version
-cd tools/skills-go
+cd .github/tools/skills-go
 go install ./cmd/skills-go
 
 # Example command
@@ -45,7 +45,7 @@ skills-go check-deprecated-dependencies npm request 2.88.2
 If your Go bin directory is not on PATH, run directly from source:
 
 ```bash
-cd tools/skills-go
+cd .github/tools/skills-go
 go run ./cmd/skills-go check-deprecated-dependencies npm request 2.88.2
 ```
 
@@ -66,7 +66,7 @@ ITERATION="<your_iteration_id>"
 export ADO_PAT_<your_normalized_org>="<your_pat>"
 # Optional but recommended for dependency vulnerability checks:
 export GH_SEC_PAT="<your_github_pat>"
-cd tools/skills-go
+cd .github/tools/skills-go
 go run ./cmd/skills-go get-pr-details "$ORG" "$PROJECT" "$REPO" "$PR"
 ```
 
@@ -83,7 +83,7 @@ $env:ADO_PAT_my_org = "<your_pat>"
 # Optional but recommended for dependency vulnerability checks:
 $env:GH_SEC_PAT = "<your_github_pat>"
 
-Set-Location tools/skills-go
+Set-Location .github/tools/skills-go
 go run ./cmd/skills-go get-pr-details $Org $Project $Repo $Pr
 ```
 
@@ -129,14 +129,14 @@ go version
 1. *(Optional)* Validate Go-based skill connectivity/authentication:
 
    ```bash
-   cd tools/skills-go
+  cd .github/tools/skills-go
    go test -short ./...
    ```
 
    If you configured integration-test secrets locally, run:
 
    ```bash
-   cd tools/skills-go
+  cd .github/tools/skills-go
    go test ./...
    ```
 
@@ -297,25 +297,25 @@ If you want to reuse these skills in another repository, copy the following path
 - `.github/prompts/pr-review.prompt.md`
 - `.github/prompts/sec-review.prompt.md`
 - `.github/skills/` (entire folder, including all `SKILL.md` files)
-- `tools/skills-go/`
+- `.github/tools/skills-go/`
 
 Example from this repo root:
 
 ```bash
 TARGET_REPO=/path/to/your-repo
 
-mkdir -p "$TARGET_REPO/.github/prompts" "$TARGET_REPO/.github/skills" "$TARGET_REPO/tools"
+mkdir -p "$TARGET_REPO/.github/prompts" "$TARGET_REPO/.github/skills" "$TARGET_REPO/.github/tools"
 cp .github/prompts/pr-review.prompt.md "$TARGET_REPO/.github/prompts/"
 cp .github/prompts/sec-review.prompt.md "$TARGET_REPO/.github/prompts/"
 cp -R .github/skills/* "$TARGET_REPO/.github/skills/"
-cp -R tools/skills-go "$TARGET_REPO/tools/"
+cp -R .github/tools/skills-go "$TARGET_REPO/.github/tools/"
 ```
 
 Then, in the target repo:
 
 ```bash
 cd /path/to/your-repo
-cd tools/skills-go
+cd .github/tools/skills-go
 go test -short ./...
 ```
 
@@ -323,7 +323,7 @@ On Windows/PowerShell:
 
 ```powershell
 Set-Location C:\path\to\your-repo
-Set-Location tools\skills-go
+Set-Location .github\tools\skills-go
 go test -short ./...
 ```
 
@@ -331,7 +331,7 @@ go test -short ./...
 
 Most skills call Azure DevOps REST API (`api-version=7.2-preview`).
 
-Run all skills through `skills-go` from `tools/skills-go`.
+Run all skills through `skills-go` from `.github/tools/skills-go`.
 
 | Skill | Description |
 | --- | --- |
@@ -393,7 +393,7 @@ repository-specific standards paths so they apply by default.
 Dependency advisory example:
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-pr-dependency-advisories "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION"
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-dependency-advisories "$ORG" "$PROJECT" "$REPO" "$PR" "$ITERATION"
 ```
 
 ## Validation (Optional)
@@ -401,14 +401,14 @@ go run ./tools/skills-go/cmd/skills-go get-pr-dependency-advisories "$ORG" "$PRO
 Run Go tests to confirm local behavior and wiring:
 
 ```bash
-cd tools/skills-go
+cd .github/tools/skills-go
 go test -short ./...
 ```
 
 Run live integration tests (only when required env vars are present):
 
 ```bash
-cd tools/skills-go
+cd .github/tools/skills-go
 go test ./...
 ```
 
@@ -438,15 +438,15 @@ Use these sources for the variables used in examples (`ORG`, `PROJECT`, `REPO`, 
 
 - `ORG` (organization): the first segment in your Azure DevOps URL, e.g. `https://dev.azure.com/<org>/...`
 - `PROJECT`: project name (or ID) from Azure DevOps Project list, or run
-  `go run ./tools/skills-go/cmd/skills-go list-projects "$ORG"`.
+  `go run ./.github/tools/skills-go/cmd/skills-go list-projects "$ORG"`.
 - `REPO`: repository name (or ID) from Repos > Files, or run
-  `go run ./tools/skills-go/cmd/skills-go list-repositories "$ORG" "$PROJECT"`.
+  `go run ./.github/tools/skills-go/cmd/skills-go list-repositories "$ORG" "$PROJECT"`.
 - `PR`: pull request number from the PR URL and title bar (example: `.../pullrequest/123` => `PR=123`).
 - `ITERATION`: latest push iteration from
-  `go run ./tools/skills-go/cmd/skills-go get-pr-iterations "$ORG" "$PROJECT" "$REPO" "$PR"`;
+  `go run ./.github/tools/skills-go/cmd/skills-go get-pr-iterations "$ORG" "$PROJECT" "$REPO" "$PR"`;
   use the highest `id` in `value[]`.
 - `THREAD_ID`: thread `id` from
-  `go run ./tools/skills-go/cmd/skills-go get-pr-threads "$ORG" "$PROJECT" "$REPO" "$PR"`
+  `go run ./.github/tools/skills-go/cmd/skills-go get-pr-threads "$ORG" "$PROJECT" "$REPO" "$PR"`
   for reply/resolve actions.
 
 ## Troubleshooting
@@ -455,7 +455,7 @@ Use these sources for the variables used in examples (`ORG`, `PROJECT`, `REPO`, 
 | --- | --- | --- |
 | `401 Unauthorized` | PAT is missing, expired, or wrong org name in env var | Verify `ADO_PAT_<normalized_org>` is set using the normalization rule above and that the PAT is valid (example: `123-org` => `ADO_PAT__123_org`) |
 | Validation fails but skills work | PR or iteration ID is stale/invalid | Re-check `PR` and `ITERATION` values (see [Where to Find Values](#where-to-find-values)) |
-| Script path not found under `scripts/` | Legacy root scripts were removed | Use Go commands from `tools/skills-go` (examples in [Go Quick Start](#go-quick-start)) |
+| Script path not found under `scripts/` | Legacy root scripts were removed | Use Go commands from `.github/tools/skills-go` (examples in [Go Quick Start](#go-quick-start)) |
 
 ## Contributing
 

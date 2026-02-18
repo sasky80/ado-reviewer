@@ -42,7 +42,7 @@ If no path is provided, review the whole repository.
 - Run skills through the Go runner:
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go <skill> <args...>
+go run ./.github/tools/skills-go/cmd/skills-go <skill> <args...>
 ```
 
 ### 1) Establish scope and context
@@ -93,7 +93,7 @@ Audit code and configuration for:
 - Run:
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-github-advisories <ecosystem> <package> <version>
+go run ./.github/tools/skills-go/cmd/skills-go get-github-advisories <ecosystem> <package> <version>
 ```
 
 - If the skill folder/script or required token (for example `GH_SEC_PAT`) is missing, skip advisory queries and continue with code/config evidence only.
@@ -105,7 +105,7 @@ go run ./tools/skills-go/cmd/skills-go get-github-advisories <ecosystem> <packag
 - Run:
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go check-deprecated-dependencies <ecosystem> <package> <version>
+go run ./.github/tools/skills-go/cmd/skills-go check-deprecated-dependencies <ecosystem> <package> <version>
 ```
 
 - Treat explicit deprecation signals as supply-chain findings when the deprecated package/version is introduced or upgraded by the reviewed change.

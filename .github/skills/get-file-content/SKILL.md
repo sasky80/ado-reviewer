@@ -10,7 +10,7 @@ description: >
 
 ## Platform Note
 
-- Clean-install path: use the Go command from `tools/skills-go`.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## Arguments
 
@@ -27,10 +27,10 @@ description: >
 
 ```bash
 # Get file from a specific branch
-go run ./tools/skills-go/cmd/skills-go get-file-content myorg MyProject MyRepo /src/app.js main branch
+go run ./.github/tools/skills-go/cmd/skills-go get-file-content myorg MyProject MyRepo /src/app.js main branch
 
 # Get file from a specific commit
-go run ./tools/skills-go/cmd/skills-go get-file-content myorg MyProject MyRepo /src/app.js abc123 commit
+go run ./.github/tools/skills-go/cmd/skills-go get-file-content myorg MyProject MyRepo /src/app.js abc123 commit
 ```
 
 ## Output

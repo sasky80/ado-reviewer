@@ -7,7 +7,7 @@ description: Fetch the content of multiple files from an Azure DevOps Git reposi
 
 ## Platform Note
 
-- Clean-install path: use the Go command from `tools/skills-go`.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## Arguments
 
@@ -24,10 +24,10 @@ description: Fetch the content of multiple files from an Azure DevOps Git reposi
 
 ```bash
 # Fetch two files from the main branch
-go run ./tools/skills-go/cmd/skills-go get-multiple-files myorg MyProject MyRepo main branch '["/src/app.js", "/README.md"]'
+go run ./.github/tools/skills-go/cmd/skills-go get-multiple-files myorg MyProject MyRepo main branch '["/src/app.js", "/README.md"]'
 
 # Fetch files from a specific commit
-go run ./tools/skills-go/cmd/skills-go get-multiple-files myorg MyProject MyRepo abc123 commit '["/src/app.js", "/docs/guide.md"]'
+go run ./.github/tools/skills-go/cmd/skills-go get-multiple-files myorg MyProject MyRepo abc123 commit '["/src/app.js", "/docs/guide.md"]'
 ```
 
 ## Output

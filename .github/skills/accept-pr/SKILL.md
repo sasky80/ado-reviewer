@@ -10,7 +10,7 @@ description: >
 
 ## Platform Note
 
-- Clean-install path: use the Go command from `tools/skills-go`.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## Arguments
 
@@ -25,7 +25,7 @@ description: >
 
 ```bash
 # Approve PR 42
-go run ./tools/skills-go/cmd/skills-go accept-pr myorg MyProject MyRepo 42
+go run ./.github/tools/skills-go/cmd/skills-go accept-pr myorg MyProject MyRepo 42
 ```
 
 ## Output

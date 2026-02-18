@@ -7,7 +7,7 @@ description: Fetch all comment threads on an Azure DevOps pull request (review c
 
 ## Platform Note
 
-- Clean-install path: use the Go command from `tools/skills-go`.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## Arguments
 
@@ -24,13 +24,13 @@ description: Fetch all comment threads on an Azure DevOps pull request (review c
 
 ```bash
 # All threads (default)
-go run ./tools/skills-go/cmd/skills-go get-pr-threads myorg MyProject MyRepo 42
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-threads myorg MyProject MyRepo 42
 
 # Only active, non-system threads
-go run ./tools/skills-go/cmd/skills-go get-pr-threads myorg MyProject MyRepo 42 active true
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-threads myorg MyProject MyRepo 42 active true
 
 # All statuses but exclude system threads
-go run ./tools/skills-go/cmd/skills-go get-pr-threads myorg MyProject MyRepo 42 "" true
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-threads myorg MyProject MyRepo 42 "" true
 ```
 
 ## Output

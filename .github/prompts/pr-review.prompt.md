@@ -30,7 +30,7 @@ PAT_VAR="ADO_PAT_${ORG_ENV_SUFFIX}"
 Use the Go runner for all Azure DevOps skills via:
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go <skill> <args...>
+go run ./.github/tools/skills-go/cmd/skills-go <skill> <args...>
 ```
 
 | Skill | Purpose |
@@ -92,7 +92,7 @@ When the user provides a pull request ID (and project/repo information), follow 
 ### 1. Gather PR metadata
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-pr-details <org> <project> <repo> <prId>
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-details <org> <project> <repo> <prId>
 ```
 
 Obtain the title, description, status, source / target branches, reviewers, and merge info.
@@ -102,7 +102,7 @@ Obtain the title, description, status, source / target branches, reviewers, and 
 Preferred for large PRs (single paged bootstrap call):
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-pr-review-bundle <org> <project> <repo> <prId> [iterationId] [fileOffset] [fileLimit] [threadOffset] [threadLimit] [statusFilter] [excludeSystem] [includeLineMap]
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-review-bundle <org> <project> <repo> <prId> [iterationId] [fileOffset] [fileLimit] [threadOffset] [threadLimit] [statusFilter] [excludeSystem] [includeLineMap]
 ```
 
 Use this to quickly obtain PR metadata, selected/latest iteration, projected file page, and filtered thread page with `hasMore` and next offsets.
@@ -110,19 +110,19 @@ Use this to quickly obtain PR metadata, selected/latest iteration, projected fil
 Alternative explicit flow:
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-pr-iterations <org> <project> <repo> <prId>
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-iterations <org> <project> <repo> <prId>
 ```
 
 Then use the **latest** iteration ID:
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-pr-changes <org> <project> <repo> <prId> <iterationId>
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-changes <org> <project> <repo> <prId> <iterationId>
 ```
 
 For a compact projection (recommended as default input for downstream file fetches):
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-pr-changed-files <org> <project> <repo> <prId> <iterationId>
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-changed-files <org> <project> <repo> <prId> <iterationId>
 ```
 
 ### 3. Search for repository coding standards and best practices only when asked by the user
@@ -141,7 +141,7 @@ Before reviewing code, look for coding standards, conventions, and best-practice
 For each file, attempt to fetch it using:
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-file-content <org> <project> <repo> <filePath> <targetBranch> branch
+go run ./.github/tools/skills-go/cmd/skills-go get-file-content <org> <project> <repo> <filePath> <targetBranch> branch
 ```
 
 Silently skip files that do not exist (404 responses). Do **not** report missing standards files as review findings.
@@ -154,20 +154,20 @@ Use projected file paths from `get-pr-changed-files` (or `get-pr-changes`) and f
 
 ```bash
 # Batch: fetch all changed files from target branch (base / "before")
-go run ./tools/skills-go/cmd/skills-go get-multiple-files <org> <project> <repo> <targetBranch> branch '<json_array_of_paths>'
+go run ./.github/tools/skills-go/cmd/skills-go get-multiple-files <org> <project> <repo> <targetBranch> branch '<json_array_of_paths>'
 
 # Batch: fetch all changed files from source branch (PR / "after")
-go run ./tools/skills-go/cmd/skills-go get-multiple-files <org> <project> <repo> <sourceBranch> branch '<json_array_of_paths>'
+go run ./.github/tools/skills-go/cmd/skills-go get-multiple-files <org> <project> <repo> <sourceBranch> branch '<json_array_of_paths>'
 ```
 
 Fallback for a single file:
 
 ```bash
 # Target branch (base / "before")
-go run ./tools/skills-go/cmd/skills-go get-file-content <org> <project> <repo> <filePath> <targetBranch> branch
+go run ./.github/tools/skills-go/cmd/skills-go get-file-content <org> <project> <repo> <filePath> <targetBranch> branch
 
 # Source branch (PR / "after")
-go run ./tools/skills-go/cmd/skills-go get-file-content <org> <project> <repo> <filePath> <sourceBranch> branch
+go run ./.github/tools/skills-go/cmd/skills-go get-file-content <org> <project> <repo> <filePath> <sourceBranch> branch
 ```
 
 Use branch names from the PR details (`sourceRefName` / `targetRefName`). Strip the `refs/heads/` prefix.
@@ -181,7 +181,7 @@ URL-encoding policy for skill commands:
 ### 5. Optionally get diff summary
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-commit-diffs <org> <project> <repo> <targetBranch> <sourceBranch> branch branch
+go run ./.github/tools/skills-go/cmd/skills-go get-commit-diffs <org> <project> <repo> <targetBranch> <sourceBranch> branch branch
 ```
 
 ### 5a. Optionally map diffs to exact line ranges
@@ -189,7 +189,7 @@ go run ./tools/skills-go/cmd/skills-go get-commit-diffs <org> <project> <repo> <
 Use this when you need precise hunk ranges for inline comment placement:
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-pr-diff-line-mapper <org> <project> <repo> <prId> <iterationId>
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-diff-line-mapper <org> <project> <repo> <prId> <iterationId>
 ```
 
 ### 5b. Check dependency advisories (when dependency manifests change)
@@ -197,7 +197,7 @@ go run ./tools/skills-go/cmd/skills-go get-pr-diff-line-mapper <org> <project> <
 If the advisory skills and required credentials are configured, run the PR-level advisory scanner first:
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-pr-dependency-advisories <org> <project> <repo> <prId> <iterationId>
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-dependency-advisories <org> <project> <repo> <prId> <iterationId>
 ```
 
 The result includes discovered dependencies and matched advisories. Treat returned advisories with `severity` = `high` or `critical` as Security findings when they affect introduced or updated dependencies.
@@ -205,7 +205,7 @@ The result includes discovered dependencies and matched advisories. Treat return
 If you need a manual follow-up query for a specific package, use:
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go get-github-advisories <ecosystem> <package> <version>
+go run ./.github/tools/skills-go/cmd/skills-go get-github-advisories <ecosystem> <package> <version>
 ```
 
 If the skill commands are unavailable or required tokens (for example `GH_SEC_PAT`) are not configured, skip advisory checks and continue the review using code/config evidence only.
@@ -215,7 +215,7 @@ If the skill commands are unavailable or required tokens (for example `GH_SEC_PA
 If the deprecation skill is available, check introduced/updated dependencies for explicit deprecation markers:
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go check-deprecated-dependencies <ecosystem> <package> <version>
+go run ./.github/tools/skills-go/cmd/skills-go check-deprecated-dependencies <ecosystem> <package> <version>
 ```
 
 Treat confirmed deprecations affecting new/upgraded dependencies as Security findings with remediation guidance.
@@ -225,7 +225,7 @@ If the skill command is unavailable, skip this check and continue with code/conf
 
 ```bash
 # Fetch only active, non-system threads (recommended — filters out vote changes and ref updates)
-go run ./tools/skills-go/cmd/skills-go get-pr-threads <org> <project> <repo> <prId> active true
+go run ./.github/tools/skills-go/cmd/skills-go get-pr-threads <org> <project> <repo> <prId> active true
 ```
 
 Optional: omit the last two arguments to fetch all threads unfiltered.
@@ -245,10 +245,10 @@ For each selected finding, run:
 
 ```bash
 # Inline comment on a specific file/line
-go run ./tools/skills-go/cmd/skills-go post-pr-comment <org> <project> <repo> <prId> <filePath> <line> "<comment text>"
+go run ./.github/tools/skills-go/cmd/skills-go post-pr-comment <org> <project> <repo> <prId> <filePath> <line> "<comment text>"
 
 # General comment (no file context)
-go run ./tools/skills-go/cmd/skills-go post-pr-comment <org> <project> <repo> <prId> - 0 "<comment text>"
+go run ./.github/tools/skills-go/cmd/skills-go post-pr-comment <org> <project> <repo> <prId> - 0 "<comment text>"
 ```
 
 Format each comment with the severity emoji, category, description, and recommendation from the finding.
@@ -261,13 +261,13 @@ When the user asks to respond to review comments and/or mark them as resolved, u
 
 ```bash
 # Reply and mark as fixed
-go run ./tools/skills-go/cmd/skills-go update-pr-thread <org> <project> <repo> <prId> <threadId> "<reply text>" fixed
+go run ./.github/tools/skills-go/cmd/skills-go update-pr-thread <org> <project> <repo> <prId> <threadId> "<reply text>" fixed
 
 # Reply only (keep thread active)
-go run ./tools/skills-go/cmd/skills-go update-pr-thread <org> <project> <repo> <prId> <threadId> "<reply text>"
+go run ./.github/tools/skills-go/cmd/skills-go update-pr-thread <org> <project> <repo> <prId> <threadId> "<reply text>"
 
 # Update status only (no reply)
-go run ./tools/skills-go/cmd/skills-go update-pr-thread <org> <project> <repo> <prId> <threadId> - fixed
+go run ./.github/tools/skills-go/cmd/skills-go update-pr-thread <org> <project> <repo> <prId> <threadId> - fixed
 ```
 
 Valid statuses: `active`, `fixed`, `closed`, `byDesign`, `pending`, `wontFix`.
@@ -279,31 +279,31 @@ When the overall assessment and user intent are clear, set the reviewer vote usi
 - ✅ **Approve**
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go accept-pr <org> <project> <repo> <prId>
+go run ./.github/tools/skills-go/cmd/skills-go accept-pr <org> <project> <repo> <prId>
 ```
 
 - ✅➕ **Approve with suggestions**
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go approve-with-suggestions <org> <project> <repo> <prId>
+go run ./.github/tools/skills-go/cmd/skills-go approve-with-suggestions <org> <project> <repo> <prId>
 ```
 
 - ⏳ **Wait for author**
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go wait-for-author <org> <project> <repo> <prId>
+go run ./.github/tools/skills-go/cmd/skills-go wait-for-author <org> <project> <repo> <prId>
 ```
 
 - ❌ **Reject**
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go reject-pr <org> <project> <repo> <prId>
+go run ./.github/tools/skills-go/cmd/skills-go reject-pr <org> <project> <repo> <prId>
 ```
 
 - ♻️ **Reset feedback**
 
 ```bash
-go run ./tools/skills-go/cmd/skills-go reset-feedback <org> <project> <repo> <prId>
+go run ./.github/tools/skills-go/cmd/skills-go reset-feedback <org> <project> <repo> <prId>
 ```
 
 Use reset only when the user explicitly asks to clear prior vote feedback.

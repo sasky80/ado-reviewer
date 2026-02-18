@@ -10,7 +10,7 @@ description: >
 
 ## Platform Note
 
-- Clean-install path: use the Go command from `tools/skills-go`.
+- Clean-install path: use the Go command from `.github/tools/skills-go`.
 
 ## Arguments
 
@@ -28,7 +28,7 @@ description: >
 
 ```bash
 # Compare two branches
-go run ./tools/skills-go/cmd/skills-go get-commit-diffs myorg MyProject MyRepo main feature/login branch branch
+go run ./.github/tools/skills-go/cmd/skills-go get-commit-diffs myorg MyProject MyRepo main feature/login branch branch
 ```
 
 ## Output
